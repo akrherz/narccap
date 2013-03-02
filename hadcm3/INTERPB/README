@@ -1,0 +1,119 @@
+
+VERSION 3 INTERPB PROGRAM (Release 3.3)
+(Updated December 23, 2004)
+
+This is the main directory of the INTERPB program in the MM5 modeling 
+system Version 3. Everything a user needs to run the INTERPB program 
+is contained in this directory.
+
+For questions, please send emails to mesouser@ucar.edu
+
+---------------------------------------------------------------
+
+What is in V3 INTERPB?
+
+V3 INTERPB takes care of the backend V3 Interp task. It interpolates
+MM5 model output data on sigma levels to pressure levels. It creates
+pressure level data in two forms: pressure level data for post-processing
+(such as for GRAPH job; output file name MMOUTP_DOMAINx), and 
+pressure level data that can be used in frontend jobs like 
+RAWINS and INTERPF (output file name REGRID_DOMAINx). 
+
+V3 INTERPB works for one domain data at a time. Depending on the 
+domain of MM5 output file, INTERPB will create pressure level data
+for that domain. It does not do horizontal interpolation.
+
+V3 INTERPB is written in Fortran 90, and requires Fortran 90 compiler.
+
+V3 INTERPB program uses V3 data format, which is different from
+that in V2. For details on V3 data format, please see
+
+http://www.mmm.ucar.edu/mm5/mm5v3.html
+
+INTERPB is supported for Cray, Alpha, HP, IBM, SGI, SUN, and Fujitsu with
+their native compilers, and PC running Linux using Portland Group Fortran
+90 compiler. If your machine isn't one of the ones supported or the
+compiler isn't the native one from the vendor, you need to edit the Makefile.
+
+---------------------------------------------------------------
+
+***************************************************************
+Also see the online self-tutorial at
+http://www.mmm.ucar.edu/mm5/mm5v3/tutorial/teachyourself.html
+(coming soon.)
+***************************************************************
+
+To compile INTERPB:
+
+- Type 'make' in the INTERPB directory to compile;
+
+- When make is successful, executable interpb will appear in this
+  directory.
+
+---------------------------------------------------------------
+
+To run INTERPB:
+
+Edit namelist.input, and type ./interpb to execute the program.
+
+Required input file for INTERPB:
+
+MM5 (MMOUT_DOMAINx, where x = 1,2,3,...)
+
+The directory and name of the input file are set in namelist.input.
+
+The output files from INTERPB are
+
+MMOUTP_DOMAINx:   pressure level data for GRAPH/RAWINS/LITTLE_R
+REGRID_DOMAINx:   pressure level data for RAWINS/LITTLE_R/INTERPF
+
+---------------------------------------------------------------
+
+Namelist:
+
+&record0:
+ input_file:	path to MM5 model sigma level data.
+
+&record1:
+ Date information. Set them similarly as it is in INTERPF.
+
+&record2:
+ Pressure level: defines the pressure levels you want to interpolate
+ sigma level data to. The data are in Pascals, bottom up, starting
+ with 10**5 Pa.
+
+---------------------------------------------------------------
+
+Other notes about INTERPB:
+
+- In addtional to MM5 model variables, INTERPB only add a couple of
+  diagnostic variables in the output: sea-level pressure, geopotential
+  height and relative humidity.
+
+- INTERPB uses top half-sigma-level values to fill fields at Ptop level,
+  and uses lowest half-sigma-level to fill surface fields.
+  This is only an approximation.
+
+- When doing vertical interpolation, INTERPB interpolates wind components
+  (u, v, w), moisture variables, perturbation pressure linearly in p. It
+  interpolates temperature and height in log p. 
+
+---------------------------------------------------------------
+
+Trouble shooting:
+
+If the job gets a 'Segmentation fault' immediately at run time, it may mean 
+there isn't enough memory to run the job. On some machine, type 'unlimit'
+helps.
+
+---------------------------------------------------------------
+
+Files/directories in this directory:
+
+CHANGES:   description of changes made since 3.0
+Makefile:  top-level makefile
+README:    general information about how to run INTERPB
+configure.rules:   rules for compilation
+interpf.deck.cray: not yet available
+namelist.input: namelist file requiring user modification
+src:       directory of INTERPB source code

@@ -1,0 +1,43 @@
+&record0
+ input_file     = '../MM5/Run/MMOUT_DOMAIN1' /
+
+&record1
+ start_year     =  1993       
+ start_month    =    03      
+ start_day      =    13     
+ start_hour     =    00                               
+ end_year       =  1993                               
+ end_month      =    03                               
+ end_day        =    14                               
+ end_hour       =    00                               
+ interval       = 21600 /
+
+&record2
+ pressure_bu_no_sfc_Pa = 100000 , 95000 , 90000 , 85000 , 80000 , 
+                                  75000 , 70000 , 65000 , 60000 , 
+                                  55000 , 50000 , 45000 , 40000 , 
+                                  35000 , 30000 , 25000 , 20000 , 
+                                  15000 , 10000  /
+
+&record3
+ print_info            = .false. /
+
+&record4
+ uv_interp_method      = 'linear in p         '
+ t_interp_method       = 'linear in log p     '
+ moist_interp_method   = 'linear in p         '
+ height_interp_method  = 'linear in log p     '
+ p_interp_method       = 'linear in p         '
+ else_interp_method    = 'linear in p         '
+ uv_extrap_up          = 'constant            '
+ t_extrap_up           = 'constant            '
+ moist_extrap_up       = 'constant            '
+ height_extrap_up      = 'extrapolate         '
+ p_extrap_up           = 'extrapolate         '
+ else_extrap_up        = 'constant            '
+ uv_extrap_low         = 'constant            '
+ t_extrap_low          = 'extrapolate         '
+ moist_extrap_low      = 'constant            '
+ height_extrap_low     = 'extrapolate         '
+ p_extrap_low          = 'extrapolate         '
+ else_extrap_low       = 'constant            ' /

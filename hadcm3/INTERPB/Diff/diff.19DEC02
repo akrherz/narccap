@@ -1,0 +1,241 @@
+===================================================================
+RPB/CHANGES
+diff -r3.1 -r3.3
+6c6
+< The current release is 3.1 (December 5, 2001)
+---
+> The current release is 3.2 (December 19, 2002)
+8a9,44
+> Bug fixes and Changes in release 3.2
+> 
+> 1. Bug fixes:
+> 
+> - Fix the RH computation to change from specific humidity to mixing ratio.
+> 
+>   Affected file:
+>   src/module_diags.F
+> 
+> 2. Changes and improvements:
+> 
+> - Allow times within 2 time-steps of the requested output time 
+>   to be used.
+> 
+>   Affected file:
+>   src/module_all_io.F
+> 
+> - Retrieving of surface pressure is now done as an inverse of the 
+>   INTERPF pp calculation.
+> 
+>   Affected files:
+>   src/interpb.F, module_diags.F
+> 
+> - Intermediate files are now created for Mercator projections as well.
+> 
+>   Affectd file:
+>   src/module_all_io.F
+> 
+> - Add LANDMASK field into the simulated regridder output.
+> 
+>   Affected file:
+>   src/module_all_io.F
+> 
+> --------------------------------------------------------
+> 
+> Bug fixes and Changes in release 3.1
+===================================================================
+RPB/README
+diff -r3.2 -r3.3
+2,3c2,3
+< VERSION 3 INTERPB PROGRAM (Release 3.1)
+< (Updated December 5, 2001)
+---
+> VERSION 3 INTERPB PROGRAM (Release 3.2)
+> (Updated December 19, 2002)
+===================================================================
+RPB/src/interpb.F
+diff -r3.5 -r3.6
+79c79
+<    INTEGER :: index_psc , index_ter , index_psfc , index_slp , index_slpc1 , index_slpd1 , index_fat1001
+---
+>    INTEGER :: index_psc , index_ter , index_psfc , index_psfc2 , index_slp , index_slpc1 , index_slpd1 , index_fat1001
+383a384,395
+> !     nums_2d = nums_2d + 1
+> !     index_psfc = nums_2d
+> !     ALLOCATE ( alls_2d(nums_2d)%array(imx,jmx) )
+> !     alls_2d(nums_2d)%small_header = alls_2d(nums_2d-1)%small_header
+> !     alls_2d(nums_2d)%small_header%staggering(1:1) = 'C'
+> !     alls_2d(nums_2d)%small_header%name(1:8) = 'PSFC    '
+> !     alls_2d(nums_2d)%small_header%units(1:25) = 'Pa                       '
+> !     alls_2d(nums_2d)%small_header%description(1:46) = 'Surface pressure                              '
+> 
+> !     CALL surface_pressure ( alls_3d(index_pp)%array , alls_2d(index_psc)%array , ptop , &
+> !                             imx , jmx , kxs , alls_2d(nums_2d)%array ) 
+> 
+385c397
+<       index_psfc = nums_2d
+---
+>       index_psfc2 = nums_2d
+391c403
+<       alls_2d(nums_2d)%small_header%description(1:46) = 'Surface pressure                              '
+---
+>       alls_2d(nums_2d)%small_header%description(1:46) = 'Surface pressure assuming const rho pert      '
+393,394c405,409
+<       CALL surface_pressure ( alls_3d(index_pp)%array , alls_2d(index_psc)%array , ptop , &
+<                               imx , jmx , kxs , alls_2d(nums_2d)%array ) 
+---
+>       CALL surface_pressure2 (  alls_3d(index_pp)%array , alls_3d(index_t)%array , alls_3d(index_qv)%array , &
+>                                 alls_2d(index_ter)%array , alls_2d(index_psc)%array , &
+>                                 alls_1d(index_sigma)%array , &
+>                                 ptop , p00 , tlp , ts0 , &
+>                                 imx , jmx , kxs , alls_2d(nums_2d)%array ) 
+406a422,423
+> !     CALL seapres ( alls_3d(index_z)%array , alls_3d(index_t)%array , alls_3d(index_qv)%array , alls_3d(index_pc)%array , &
+> !                    alls_2d(index_ter)%array , alls_2d(index_psfc)%array , imx , jmx , kxs , alls_2d(nums_2d)%array ) 
+408c425
+<                      alls_2d(index_ter)%array , alls_2d(index_psfc)%array , imx , jmx , kxs , alls_2d(nums_2d)%array ) 
+---
+>                      alls_2d(index_ter)%array , alls_2d(index_psfc2)%array , imx , jmx , kxs , alls_2d(nums_2d)%array ) 
+===================================================================
+RPB/src/module_all_io.F
+diff -r3.6 -r3.13
+235c235
+<             IF ( ( bhi(1,1) .EQ. 11 ) .AND. ( ABS(dts) .LE. bhr(2,12)/REAL(bhi(20,1)) ) ) THEN
+---
+>             IF ( ( bhi(1,1) .EQ. 11 ) .AND. ( ABS(dts) .LE. 2.*bhr(2,12) ) ) THEN
+531c531
+< #ifndef ( IBM ) 
+---
+> #ifndef IBM
+692c692
+<          bhi( 3,index) = 1 ; bhic( 3,index) = 'INTERPB Program Version Number                                                  '
+---
+>          bhi( 3,index) = 2 ; bhic( 3,index) = 'INTERPB Program Version Number                                                  '
+859a860,862
+>       LOGICAL :: found_landmask
+>       INTEGER :: index_landuse , i , j
+> 
+894c897
+<          bhi( 3,index) = 1 ; bhic( 3,index) = 'INTERPB Program Version Number                                                  '
+---
+>          bhi( 3,index) = 2 ; bhic( 3,index) = 'INTERPB Program Version Number                                                  '
+967a971,986
+>       !  If there is no LANDMASK data
+> 
+>       found_landmask = .FALSE.
+>       DO loop = 1 , nums_2d
+>          IF      ( alls_2d(loop)%small_header%name(1:8) .EQ. 'LANDMASK' ) THEN
+>             found_landmask = .TRUE.
+>          ELSE IF ( alls_2d(loop)%small_header%name(1:8) .EQ. 'LAND USE' ) THEN
+>             index_landuse = loop
+>          ENDIF
+>       END DO
+>       IF ( .NOT. found_landmask ) THEN
+>          IF ( print_info ) THEN
+>             PRINT '(A,I2,A)','Creating LANDMASK field from LAND USE, using category ',bhi(23,1),'.'
+>          END IF
+>       END IF
+> 
+978a998
+>                  ( alls_2d(loop)%small_header%name(1:8) .EQ. 'LANDMASK' ) .OR. &
+1006a1027,1056
+> 
+>                IF ( ( alls_2d(loop)%small_header%name(1:8) .EQ. 'LAND USE' ) .AND. ( .NOT. found_landmask ) ) THEN
+>                   WRITE ( output_regridder ) sh_flag
+>                   num_dims        = 2
+>                   start_dims      = (/ 1, 1, 1, 1 /)
+>                   end_dims        = (/ imx, jmx, 1, 1 /)
+>                   xtime           = alls_2d(loop)%small_header%xtime
+>                   staggering      = alls_2d(loop)%small_header%staggering
+>                   ordering        = alls_2d(loop)%small_header%ordering
+>                   date            = current_date19 // '.0000'
+>                   name(1:9)       = 'LANDMASK '
+>                   units           = 'FLAG: 0=water, 1=land    '
+>                   description     = 'Land mask: 0=water point, 1=land point        '
+>                   WRITE ( output_regridder ) num_dims , start_dims , end_dims , xtime , &
+>                                    staggering , ordering , date , name , units , description
+>                   DO j = 1 , jmx -1
+>                      DO i = 1 , imx -1
+>                         IF ( ABS( REAL(bhi(23,1)) - alls_2d(loop)%array(i,j) ) .LT. 0.1 ) THEN
+>                            dum2d(i,j) = 0.
+>                         ELSE
+>                            dum2d(i,j) = 1.
+>                         END IF
+>                      END DO
+>                   END DO
+>                   CALL fill2d ( dum2d , imx , jmx , staggering )
+>                   WRITE ( output_regridder ) dum2d 
+>                   IF ( print_info ) THEN
+>                      PRINT '(A,A,A)','Outputting 2D data ',name(1:8),'.'
+>                   END IF
+>                END IF
+1240c1290,1291
+<                   STOP 'fill this in first - TWICE!'
+---
+>                   WRITE ( output_intermediate ) lat1, lon1, bhr(9,1)/1000., bhr(9,1)/1000., &
+>                                                 bhr(5,1)
+1356c1407,1408
+<                STOP 'fill this in first - TWICE!'
+---
+>                WRITE ( output_intermediate ) lat1, lon1, bhr(9,1)/1000., bhr(9,1)/1000., &
+>                                              bhr(5,1)
+===================================================================
+RPB/src/module_diags.F
+diff -r3.0 -r3.2
+29c29
+<                qs = eps*es/((0.01 *p(i,j,k))-(1.-eps)*es)
+---
+>                qs = eps*es/((0.01 *p(i,j,k))-es)
+65a66,113
+> 
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> 
+>    SUBROUTINE surface_pressure2 ( pp , t , q , ter , pstar , sigmah , ptop , p0 , tlp , ts0 , &
+>                                   imx , jmx , kxs , psfc )
+> 
+>       IMPLICIT NONE
+> 
+>       !  Input variables.
+> 
+>       INTEGER , INTENT(IN)                    :: imx , jmx , kxs
+>       REAL    , INTENT(IN)                    :: ptop , p0 , tlp , ts0
+>       REAL    , INTENT(IN) , DIMENSION(:    ) :: sigmah
+>       REAL    , INTENT(IN) , DIMENSION(:,:  ) :: ter , pstar
+>       REAL    , INTENT(IN) , DIMENSION(:,:,:) :: pp , t , q
+> 
+>       !  Output variables.
+> 
+>       REAL    , INTENT(OUT) , DIMENSION(:,:)  :: psfc
+> 
+>       !  Local variables.
+> 
+>       INTEGER :: i , j
+>       REAL , DIMENSION(imx,jmx) :: tv , t0 , pr0
+> 
+>       !  Base state / reference values at the lowest half sigma level, oh, and let's pick
+>       !  up a couple boxes of virtual temperature at the store in case we need some.
+> 
+>       DO j = 1, jmx - 1
+>          DO i = 1, imx - 1
+>             pr0(i,j) = pstar(i,j) * sigmah(kxs) + ptop
+>             t0(i,j) = ts0 + tlp * LOG ( pr0(i,j) / p0 )
+>             tv(i,j) = t(i,j,kxs) * ( 1 + 0.608 * q(i,j,kxs) ) 
+>          END DO
+>       END DO
+> 
+>       !  Assuming density perturbation remains constant in lowest half sigma layer, compute
+>       !  surface pressure as inverse of pp diagnostic as originally performed in INTERPF.
+> 
+>       DO j = 1 , jmx - 1 
+>          DO i = 1 , imx - 1 
+>             psfc(i,j) = pp(i,j,kxs) * ( pstar(i,j) + ptop ) / pr0(i,j) + &
+>                        ( pstar(i,j) + ptop )                           - &
+>                        ( tv(i,j) - t0(i,j) ) / t(i,j,kxs) * ( pstar(i,j) + ptop - pr0(i,j) ) 
+>          END DO
+>       END DO
+> 
+>    END SUBROUTINE surface_pressure2
+===================================================================
+RPB/src/module_map_utils.F
+diff -r3.2 -r3.3
+640d639
+< print *,'conefactor is ',cone
