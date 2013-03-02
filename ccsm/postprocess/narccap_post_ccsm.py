@@ -23,7 +23,7 @@ else:
     PLEVEL = None
 META  = {}
 if RUNID == 'S':
-    DATADIR = "Run.scenario"
+    DATADIR = "../Run.scenario"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP scenario from the Community Climate System Model (CCSM)'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'scenario from CCSM'
@@ -114,6 +114,15 @@ VARS = {
           'cell_methods'  : 'time: Instantaneous',
             'long_name'  : 'Snow Depth',
             'standard_name'  : 'surface_snow_thickness'},
+ 'swe'  : {'units'  : 'mm',
+            'source' : 'MMOUTP',
+            'ncsource'  : 'weasd',
+          'table' : 3,
+          'interval' : HOURLY3,
+            'coordinates'  : "lon lat",
+          'cell_methods'  : 'time: Instantaneous',
+            'long_name'  : 'Snow Water Equivalent',
+            'standard_name'  : 'lwe_thickness_of_surface_snow_amount'},
  'rsut'  : {'units'  : 'W m-2',
             'source' : 'NCOUT',
             'ncsource'  : 'osw1',
