@@ -1,0 +1,15 @@
+AR		=	ar ru
+RM		=	/bin/rm -f
+RM_LIST		=	*.o *.M core *.kmo *.mod interpb
+CD		=	cd
+LN		=	ln -s
+MAKE		=	make -i -f Makefile
+SHELL		=	/bin/sh
+TOUCH		=	touch
+CPP		=	/lib/cpp
+CPPFLAGS		=	-I. -C -P -DDEC -traditional
+FC		=	ifort
+FCFLAGS		=	-FR -pc 32 -convert big_endian
+LDFLAGS		=	
+CCFLAGS		=	-DDEC -I.
+LOCAL_LIBRARIES	=	

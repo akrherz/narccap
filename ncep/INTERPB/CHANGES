@@ -1,0 +1,110 @@
+
+You will find descriptions of the changes to the INTERPB version 3
+source code in this file. Each release will be a complete tar file
+such as this.
+
+The current release is 3.3 (December 23, 2004)
+
+========================================================
+Bug fixes and changes since release 3.3
+
+April 4, 2005
+
+- Add a fake snowcover field if MMOUT was generated without
+  this field
+  Affected files:
+  src/interpb.F
+  src/module_all_io.F
+
+========================================================
+Bug fixes and Changes in release 3.3
+
+1. Bug fixes:
+
+- Fix the top of the pressure column to be p(kxp). It was
+  previously incorrectly defined as p(kxs)
+
+  Affected file:
+  src/module_interp.F
+
+- Add a fix so that TERRAIN and surface H correspond.
+  Thanks to John Spagnol
+
+  Affected files:
+  src/interpb.F
+  src/module_interp.F
+
+- Allow the surface pressure to be below 1001mb
+
+  Affected file:
+  src/module_diags.F
+
+- Make CP consistent with rest of programs.
+
+  Affected file:
+  src/module_phys_consts.F
+
+2. Changes and improvements:
+
+- Change the min allowed RH to be 1%. The previous min 
+  was set to 5%
+
+  Affected file:
+  src/module_diags.F
+
+- Add INTEL compiler flags. PGI will remain default. 
+  To compile for intel type "make intel"
+
+  Affected file:
+  Makefile
+
+========================================================
+Bug fixes and Changes in release 3.2
+
+1. Bug fixes:
+
+- Fix the RH computation to change from specific humidity to mixing ratio.
+
+  Affected file:
+  src/module_diags.F
+
+2. Changes and improvements:
+
+- Allow times within 2 time-steps of the requested output time 
+  to be used.
+
+  Affected file:
+  src/module_all_io.F
+
+- Retrieving of surface pressure is now done as an inverse of the 
+  INTERPF pp calculation.
+
+  Affected files:
+  src/interpb.F, module_diags.F
+
+- Intermediate files are now created for Mercator projections as well.
+
+  Affectd file:
+  src/module_all_io.F
+
+- Add LANDMASK field into the simulated regridder output.
+
+  Affected file:
+  src/module_all_io.F
+
+--------------------------------------------------------
+
+Bug fixes and Changes in release 3.1
+
+1. Bug fixes:
+
+- Allow INTERPB to work with dry model runs.
+
+- Fill outer row/column for output cross point variables.
+  This allows output from INTERPB to pass through objective
+  routines and INTERPF again.
+
+
+2. Changes and improvements:
+
+- New map routines from Brent Shaw of FSL/NOAA.
