@@ -25,7 +25,7 @@ else:
     PLEVEL = None
 META  = {}
 if RUNID == 'S':
-    DATADIR = "Run.scenario"
+    DATADIR = "../Run.scenario"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP scenario climate using HADCM3'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'scenario climate using HADCM3'
@@ -40,7 +40,7 @@ if RUNID == 'S':
     mx.DateTime.DateTime(2071,1,1)
     ]
 if RUNID == 'C':
-    DATADIR = "Run.contemporary"
+    DATADIR = "../Run.contemporary"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP contemporary climate using HADCM3'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'contemporary climate using HADCM3'
@@ -135,6 +135,15 @@ VARS = {
           'cell_methods'  : 'time: Instantaneous',
             'long_name'  : 'Snow Depth',
             'standard_name'  : 'surface_snow_thickness'},
+ 'swe'  : {'units'  : 'mm',
+            'source' : 'MMOUTP',
+            'ncsource'  : 'weasd',
+          'table' : 3,
+          'interval' : HOURLY3,
+            'coordinates'  : "lon lat",
+          'cell_methods'  : 'time: Instantaneous',
+            'long_name'  : 'Snow Water Equivalent',
+            'standard_name'  : 'lwe_thickness_of_surface_snow_amount'},
  'rsut'  : {'units'  : 'W m-2',
             'source' : 'NCOUT',
             'ncsource'  : 'osw1',
