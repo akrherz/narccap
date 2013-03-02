@@ -1,11 +1,7 @@
 import netCDF4
 import numpy as np
 import mx.DateTime
-from pyIEM import mesonet
-import iemdb
 import os
-coop = iemdb.connect('coop', bypass=True)
-ccursor = coop.cursor()
 
 times = [
  mx.DateTime.DateTime(1968,1,1),
@@ -17,7 +13,7 @@ times = [
  mx.DateTime.DateTime(1996,1,1),
  mx.DateTime.DateTime(2001,1,1)
 ]
-times = [
+times2 = [
  mx.DateTime.DateTime(2038,1,1),
  mx.DateTime.DateTime(2041,1,1),
  mx.DateTime.DateTime(2046,1,1),
@@ -29,7 +25,7 @@ times = [
 ]
 
 def findIJ(lon,lat):
-  nc = netCDF4.Dataset('../final/pr_MM5I_hadcm3_1968010100.nc', 'r')
+  nc = netCDF4.Dataset('../final/swe_MM5I_hadcm3_1968010103.nc', 'r')
   lats = nc.variables['lat'][:]
   lons = nc.variables['lon'][:]
   (y,x) = np.shape(lats)
@@ -51,11 +47,11 @@ i,j = findIJ(-93.62, 41.99)
 for k in range(len(times)-1):
     ts0 = times[k]
     ts1 = times[k+1]
-    fp = '../final/pr_MM5I_hadcm3_%s00.nc' % (ts0.strftime('%Y%m%d'),)
+    fp = '../final/swe_MM5I_hadcm3_%s03.nc' % (ts0.strftime('%Y%m%d'),)
     if not os.path.isfile(fp):
         continue
     nc = netCDF4.Dataset(fp, 'r')
-    data = nc.variables['pr'][:,j,i] * 10800.0 / 25.4
+    data = nc.variables['swe'][:,j,i] 
     #print np.shape(nc.variables['tasmax'][:])
     #print nc.variables['lat'][j,i]
     #print nc.variables['lon'][j,i]
@@ -65,7 +61,7 @@ for k in range(len(times)-1):
         offset = (yr-ts0.year)*360*8
         offset += (mo-1)*30*8
         offset2 = offset + (30*8)
-        model = np.sum(data[offset:offset2] )
+        model = np.average(data[offset:offset2] )
         #sql = "SELECT avg(high) from alldata where stationid = 'ia0200' and year = %s and month = %s" % (yr, mo)
         #ccursor.execute(sql)
         #row = ccursor.fetchone()
@@ -92,6 +88,6 @@ for yr in range(1968,2001):
 for yr in range(times[0].year,times[-1].year,1):
   print "%4s" % (yr,),
   for mo in range(1,13):
-    print "%4.1f" % ( models[yr-times[0].year,mo-1],),
-  print "%4.1f" % ( np.sum(models[yr-times[0].year,:]),),
+    print "%7.1f" % ( models[yr-times[0].year,mo-1],),
+  print "%7.1f" % ( np.sum(models[yr-times[0].year,:]),),
   print
