@@ -21,7 +21,7 @@ def process_MMOUT(datadir):
         # We don't wish to convert this file, it is just along for the ride
         if file == "MMOUT_DOMAIN1_000":
             continue
-        os.chdir("/tera10/akrherz/narccap/INTERPB")
+        os.chdir("/mnt/howard/narccap/INTERPB")
         # Figure out time axis
         taxis = lib.extract_times(datadir+file)
 
@@ -59,7 +59,7 @@ def process_MMOUT(datadir):
 
         # Gzip
         os.chdir( datadir )
-        os.system("gzip %s" % (file,))
+        #os.system("gzip %s" % (file,))
 
         # Convert to NetCDF
         file = file.replace("UT", "UTP")
@@ -92,7 +92,7 @@ def process_NCOUT(datadir):
         a = so.read() # Necessary to keep things blocking?
         
         # Gzip
-        os.system("gzip %s" % (file,))
+        #os.system("gzip %s" % (file,))
 
 if __name__ == '__main__':
     datadir = sys.argv[1]

@@ -8,27 +8,25 @@ import numpy
 import sys
 import os
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 3:
     print 'Usage: python narccap_post.py RUNID VNAME'
     print '  RUNID is S: scenario  C: contempory'
-    print '  DSON  is T: true/on  F: false/off'
     print '  VNAME is the standard NARCCAP Variable Name'
     print 'Example: python narccap_post.py C pr'
     sys.exit()
 
 RUNID = sys.argv[1]
-DSON = sys.argv[2]
-VNAME = sys.argv[3]
-if len(sys.argv) == 5:
-    PLEVEL = int(sys.argv[4])
+VNAME = sys.argv[2]
+if len(sys.argv) == 4:
+    PLEVEL = int(sys.argv[3])
 else:
     PLEVEL = None
 META  = {}
 if RUNID == 'S':
     DATADIR = "Run.scenario"
-    META['title'] = 'ISU MM5 model output prepared for NARCCAP scenario climate using HADCM3'
+    META['title'] = 'ISU MM5 model output prepared for NARCCAP scenario from the Community Climate System Model (CCSM)'
     META['prefix'] = 'MM5I'
-    META['experiment_id'] = 'scenario climate using HADCM3'
+    META['experiment_id'] = 'scenario from CCSM'
     TIMES = [
     mx.DateTime.DateTime(2038,1,1),
     mx.DateTime.DateTime(2041,1,1),
@@ -41,9 +39,9 @@ if RUNID == 'S':
     ]
 if RUNID == 'C':
     DATADIR = "Run.contemporary"
-    META['title'] = 'ISU MM5 model output prepared for NARCCAP contemporary climate using HADCM3'
+    META['title'] = 'ISU MM5 model output prepared for NARCCAP contemporary from the Community Climate System Model (CCSM)'
     META['prefix'] = 'MM5I'
-    META['experiment_id'] = 'contemporary climate using HADCM3'
+    META['experiment_id'] = 'contemporary from CCSM'
     TIMES = [
     mx.DateTime.DateTime(1968,1,1),
     mx.DateTime.DateTime(1971,1,1),
@@ -54,25 +52,6 @@ if RUNID == 'C':
     mx.DateTime.DateTime(1996,1,1),
     mx.DateTime.DateTime(2001,1,1)
     ]
-if RUNID == 'T':
-    DATADIR = "data.TEST"
-    META['title'] = 'ISU MM5 HADCM3 TEST'
-    META['prefix'] = 'TEST'
-    META['experiment_id'] = 'TEST 7 JUL 2011'
-    TIMES = [
-    mx.DateTime.DateTime(1968,1,1),
-    mx.DateTime.DateTime(1971,1,1),
-    mx.DateTime.DateTime(1976,1,1),
-    mx.DateTime.DateTime(1981,1,1),
-    mx.DateTime.DateTime(1986,1,1),
-    mx.DateTime.DateTime(1991,1,1),
-    mx.DateTime.DateTime(1996,1,1),
-    mx.DateTime.DateTime(2001,1,1)
-    ]
-if DSON == 'T':
-    DATADIR += ".deepsoil_on"
-else:
-    DATADIR += ".deepsoil_off"
 
 HOURLY3, DAILY = (1,2)
 
@@ -322,39 +301,27 @@ VARS = {
    'cell_methods' : 'time: instantaneous',
    'coordinates': 'lon lat height',
  },
- 'zg' : {
+ 'ta' : {
    '3d': True,
-    'ncsource' : 'h',
-   'table': 3,
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : '500 hPa Geopotential Height',
-   'units' : 'm',
-   'standard_name' : 'geopotential_height',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'ta' : {                               
-   '3d': True,        
-    'ncsource' : 't',  
+    'ncsource' : 't',
    'interval' : HOURLY3,
    'source' : 'MMOUTP',
    'long_name' : 'Temperature',
-   'units' : 'K',             
-   'standard_name' : 'air_temperature',    
+   'units' : 'K',
+   'standard_name' : 'air_temperature',
    'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',        
- },  
- 'ua' : {                                                                      
-   '3d': True,                                                                  
-    'ncsource' : 'u',                                                         
-   'interval' : HOURLY3,                                                        
-   'source' : 'MMOUTP',                                                         
-   'long_name' : 'Zonal Wind Component',                                 
+   'coordinates': 'lon lat plev',
+ },
+ 'ua' : {
+   '3d': True,
+    'ncsource' : 'u',
+   'interval' : HOURLY3,
+   'source' : 'MMOUTP',
+   'long_name' : 'Zonal Wind Component',
    'units' : 'm s-1',
-   'standard_name' : 'eastward_wind',                       
-   'cell_methods' : 'time: instantaneous',                                      
-   'coordinates': 'lon lat plev',                                               
+   'standard_name' : 'eastward_wind',
+   'cell_methods' : 'time: instantaneous',
+   'coordinates': 'lon lat plev',
  },
  'wa' : {
    '3d': True,
@@ -372,20 +339,20 @@ VARS = {
     'ncsource' : 'v',                                                           
    'interval' : HOURLY3,                                                        
    'source' : 'MMOUTP',                                                         
-   'long_name' : 'Meridional Wind Component',
+   'long_name' : 'Meridional Wind Component',                                   
    'units' : 'm s-1',                                                           
-   'standard_name' : 'northward_wind',
-   'cell_methods' : 'time: instantaneous',                                      
-   'coordinates': 'lon lat plev',                                               
- },    
- 'cli' : {
+   'standard_name' : 'northward_wind',                                          
+   'cell_methods' : 'time: instantaneous',                                         'coordinates': 'lon lat plev',                                               
+ },  
+ 'zg' : {
    '3d': True,
-    'ncsource' : 'ice',
+    'ncsource' : 'h',
+   'table': 3,
    'interval' : HOURLY3,
    'source' : 'MMOUTP',
-   'long_name' : 'Cloud Ice Fraction of Layer',
-   'units' : '1',
-   'standard_name' : 'mass_fraction_of_cloud_ice_in_air',
+   'long_name' : '500 hPa Geopotential Height',
+   'units' : 'm',
+   'standard_name' : 'geopotential_height',
    'cell_methods' : 'time: instantaneous',
    'coordinates': 'lon lat plev',
  },
@@ -397,6 +364,17 @@ VARS = {
    'long_name' : 'Cloud Liquid Water Fraction of Layer',
    'units' : '1',
    'standard_name' : 'mass_fraction_of_cloud_liquid_water_in_air',
+   'cell_methods' : 'time: instantaneous',
+   'coordinates': 'lon lat plev',
+ },
+ 'cli' : {
+   '3d': True,
+    'ncsource' : 'ice',
+   'interval' : HOURLY3,
+   'source' : 'MMOUTP',
+   'long_name' : 'Cloud Ice Fraction of Layer',
+   'units' : '1',
+   'standard_name' : 'mass_fraction_of_cloud_ice_in_air',
    'cell_methods' : 'time: instantaneous',
    'coordinates': 'lon lat plev',
  },
@@ -492,6 +470,7 @@ VARS = {
    'standard_name' : 'air_temperature',
    'cell_methods' : 'time: maximum within days',
    'npfunc': numpy.max,
+   'npfunc2': numpy.maximum,
    'coordinates': 'lon lat height',
  },
  'tasmin' : {
@@ -503,6 +482,7 @@ VARS = {
    'standard_name' : 'air_temperature',
    'cell_methods' : 'time: minimum within days',
    'npfunc': numpy.min,
+   'npfunc2': numpy.minimum,
    'coordinates': 'lon lat height',
  },
  'spdmax' : {
@@ -535,9 +515,9 @@ def create_file(VNAME, ts0, ts1):
     """
     Create a CF compliant file for NARCCAP
     """
-    fp = '../final/%s_%s_hadcm3_%s03.nc' % (VNAME, META['prefix'], ts0.strftime("%Y%m%d"))
+    fp = '../final/%s_%s_ccsm_%s03.nc' % (VNAME, META['prefix'], ts0.strftime("%Y%m%d"))
     if PLEVEL is not None:
-        fp = '../final/%s_%s_hadcm3_p%03i_%s.nc' % (VNAME, META['prefix'],
+        fp = '../final/%s_%s_ccsm_p%03i_%s.nc' % (VNAME, META['prefix'],
                                         PLEVEL, ts0.strftime("%Y%m%d%H"))
     nc = netCDF4.Dataset(fp, 'w', format='NETCDF3_CLASSIC')
     nc.Conventions = 'CF-1.0'
@@ -550,16 +530,16 @@ def create_file(VNAME, ts0, ts1):
     # Should be table 1 for daily ?
     nc.table_id = 'Table %s' % (VARS[VNAME].get('table', 1),)
     nc.project_id = 'NARCCAP'
-    nc.source = 'MM5(2002): atmosphere: MM5v3.6.3 non-hydrostatic; sst/sea ice: AMIPII; land: Noah;  Convection: Kain-Fritsch 2; Radiation: RRTM; PBL: MRF; Explicit Moisture: Reisner Mixed-Phase; Buffer: 15 point exponential; Horizontal Resolution: 50km; Vertical Levels: 24; Deepsoil: %s' % (DSON,)
+    nc.source = 'MM5(2002): atmosphere: MM5v3.6.3 non-hydrostatic; sst/sea ice: AMIPII; land: Noah;  Convection: Kain-Fritsch 2; Radiation: RRTM; PBL: MRF; Explicit Moisture: Reisner Mixed-Phase; Buffer: 15 point exponential; Horizontal Resolution: 50km; Vertical Levels: 24'
     nc.institution = 'ISU (Iowa State University, Ames, Iowa, USA)'
 
-    tsteps = (ts1.year - ts0.year) * 360
+    tsteps = int((ts1.year - ts0.year) * 365) 
     if VARS[VNAME]['interval'] == HOURLY3:
         tsteps *= 8
     print ' + Created NetCDF File %s has %s time steps' % (fp, tsteps)
     nc.createDimension('time', 0)
     nc.createDimension('bnds', 2)
-    if VNAME in ['ua', 'va']:
+    if VNAME in ['ua','va']:
         nc.createDimension('xc', 124)
         nc.createDimension('yc', 100)
         latgrid = 'latitdot'
@@ -579,7 +559,7 @@ def create_file(VNAME, ts0, ts1):
     tm.long_name = 'time'
     tm.standard_name = 'time'
     tm.axis = 'T'
-    tm.calendar = '360_day'
+    tm.calendar = '365_day'
     tm.units = 'days since %s 00:00:0.0' % (TIMES[0].strftime("%Y-%m-%d"),)
     tm.bounds = 'time_bnds'
 
@@ -627,7 +607,7 @@ def create_file(VNAME, ts0, ts1):
 
 
     # write tm
-    offset = (ts0.year - TIMES[0].year) * 360
+    offset = int((ts0 - TIMES[0]).days)
     if VARS[VNAME]['interval'] == HOURLY3:
         tm[:] = offset + numpy.arange(0.125, (tsteps/8) + 0.125, 0.125)
         # write tmb
@@ -685,40 +665,58 @@ def compute1d(VNAME, fp, ts0, ts1):
     nc = netCDF4.Dataset(fp, 'a')
     ncv = nc.variables[VNAME]
 
-    # Now we dance
-    cnter = 0
-    for yr in range(ts0.year, ts1.year):
-        for mo in range(1,13):
-            for dy in range(1,31):
-                i = (yr - TIMES[0].year) * 36 + 1
-                i += (mo -1) * 3
-                i += ((dy-1)/ 10)
-                offset1 = ((dy - 1) * 8 + 2) % 80
-                offset2 = ((dy) * 8 + 2) % 80
-                if offset2 < offset1:
-                    offset2 = -1
-                fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
-                if not os.path.isfile(fp2):
-                    print 'Missing File: %s, continuing' % (fp2,)
-                    continue
-                nc2 = netCDF4.Dataset(fp2, 'r')
-                data = VARS[VNAME]['npfunc'](nc2.variables[VARS[VNAME]['ncsource']][offset1:offset2,15:-15,15:-16], axis=0)
-                nc2.close()
-                # Figure out which files we need!
-                if dy in [10,20,30]: # Uh oh, need two files!
-                    fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i+1)
-                    if not os.path.isfile(fp2):
-                        print 'Missing File: %s, continuing' % (fp2,)
-                        continue
-                    nc2 = netCDF4.Dataset(fp2, 'r')
-                    data2 = VARS[VNAME]['npfunc'](nc2.variables[VARS[VNAME]['ncsource']][:2,15:-15,15:-16], axis=0)
-                    data = numpy.where( data2 > data, data2, data )
-                    nc2.close()
+    lookfor = ts0.strftime("minutes since %Y-%m-%d")
+    # Figure out when our data begins!
+    for i in range(1,1500):
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+        nc2 = netCDF4.Dataset(fp2, 'r')
+        # minutes since 1983-11-01 03:00:16
+        if nc2.variables['time'].units.find(lookfor) == 0:
+           nc2.close()
+           break
+        nc2.close()
 
-                ncv[cnter] = data.astype('f')
-                print '%s-%s-%s OFF1: %s OFF2: %s I: %s' % (yr, mo, dy, 
-                    offset1, offset2, i)
-                cnter += 1
+    print 'For timestamp %s We found file %s' % (ts0, fp2)
+    now = ts0 + mx.DateTime.RelativeDateTime(hours=6)
+    oneday = mx.DateTime.RelativeDateTime(days=1)
+    cnter = 0
+    while now < ts1:
+        if now.month == 2 and now.day == 29:
+            now += oneday
+            continue
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+        nc2 = netCDF4.Dataset(fp2, 'r')
+        # Figure out timestamp base
+        tsbase = mx.DateTime.strptime(nc2.variables['time'].units[14:27], 
+		'%Y-%m-%d %H')
+        tsteps = len(nc2.variables['time'][:])
+
+        # Okay, we need to go from 6z to 6z of the next day
+        offset1 = int((now - tsbase).hours / 3)
+        offset2 = int(((now + oneday) - tsbase).hours / 3)
+        if offset2 > tsteps:
+            i += 1
+            offset2 = tsteps
+        data = VARS[VNAME]['npfunc'](nc2.variables[VARS[VNAME]['ncsource']][offset1:offset2,15:-15,15:-16], axis=0)
+        nc2.close()
+
+
+        if offset2 == tsteps: # Need to step ahead and get next file
+            fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+            nc2 = netCDF4.Dataset(fp2, 'r')
+            data2 = nc2.variables[VARS[VNAME]['ncsource']][:1,15:-15,15:-16]
+            nc2.close()
+            #print 'data IN', numpy.average(data)
+            #print 'data2 IN', numpy.average(data2)
+            if numpy.max(data2) != 0:
+                data = VARS[VNAME]['npfunc2'](data, data2)
+            else:
+                print 'Skipping TS2 Computation'
+        print '%s %s %02i %02i Avg: %.3f' % (now.strftime("%Y%m%d"), fp2, offset1, offset2, numpy.average(data))
+
+        ncv[cnter] = data.astype('f')
+        cnter += 1
+        now += mx.DateTime.RelativeDateTime(days=1)
     nc.close()
 
 
@@ -727,23 +725,31 @@ def compute3h(VNAME, fp, ts0, ts1):
     This is just a straight dumping of data from the NC or MMOUTP files
     to the resulting netCDF file.
     """
-    global LOOP1, LOOP2
-    offset = (ts0.year - TIMES[0].year) * 36 + 1
-    offset2 = (ts1.year - TIMES[0].year) * 36 + 1
+    lookfor = ts0.strftime("minutes since %Y-%m-%d")                            
+    # Figure out when our data begins!                                          
+    for i in range(1,1500):                                                     
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)    
+        nc2 = netCDF4.Dataset(fp2, 'r')                                         
+        # minutes since 1983-11-01 03:00:16                                     
+        if nc2.variables['time'].units.find(lookfor) == 0:                      
+           nc2.close()                                                          
+           break                                                                
+        nc2.close()                                                             
+                                                                                
+    print 'For timestamp %s We found file %s' % (ts0, fp2)       
+
     nc = netCDF4.Dataset(fp, 'a')
     ncv = nc.variables[VNAME]
-    # Instead of writing data one 10 day chunk at a time, load it all up
-    # first into a variable and then do a bulk write, I think this is 
-    # much faster, maybe not...
-    #result = numpy.zeros( numpy.shape(ncv), 'f')
+    total = len(nc.variables['time'][:])
+    now = ts0
     v = 0
-    for i in range(offset,offset2):
+    while v < total:
         fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
-        if not os.path.isfile(fp2):
-            print 'Missing File: %s, continuing' % (fp2,)
-            v += 80
-            continue
         nc2 = netCDF4.Dataset(fp2, 'r')
+        tsbase = mx.DateTime.strptime(nc2.variables['time'].units[14:27], 
+		'%Y-%m-%d %H')
+        tsteps = len(nc2.variables['time'][:])
+
         if VNAME == 'mrfso':
             data = ((nc2.variables['soil_m_1'][:,15:-15,15:-16] - nc2.variables['soil_w_1'][:,15:-15,15:-16]) * 0.10  + (nc2.variables['soil_m_2'][:,15:-15,15:-16] - nc2.variables['soil_w_2'][:,15:-15,15:-16]) * 0.30  + (nc2.variables['soil_m_3'][:,15:-15,15:-16] - nc2.variables['soil_w_3'][:,15:-15,15:-16]) * 0.60  + (nc2.variables['soil_m_4'][:,15:-15,15:-16] - nc2.variables['soil_w_4'][:,15:-15,15:-16]) * 1.00  ) * 1000.0
 
@@ -802,11 +808,19 @@ def compute3h(VNAME, fp, ts0, ts1):
                 data = nc2.variables[ncs][:,l,15:-15,15:-16]
             else:
                 data = nc2.variables[ncs][:,15:-15,15:-16]
-        print "%s %5i %5i %.5f" % (fp2, v, v+80, numpy.max(data) / VARS[VNAME].get('quo', 1.0))
-        ncv[v:v+80] = data / VARS[VNAME].get('quo', 1.0)
+        # Okay, we have the data var loaded up
+        v2 = v + tsteps
+        ed = tsteps
+        if v2 > total:
+            ed -= (v2 - total)
+            v2 = total
+        
+        print "i=%4i tsteps=%2i %5i %5i/%5i %.5f" % (i, tsteps, v, v2, total, 
+           numpy.max(data) / VARS[VNAME].get('quo', 1.0))
+        ncv[v:v2] = data[0:ed] / VARS[VNAME].get('quo', 1.0)
         nc2.close()
-        v += 80
-    #ncv[:] = result
+        v = v2
+        i += 1
     nc.close()
 
 for i in range(len(TIMES)-1):

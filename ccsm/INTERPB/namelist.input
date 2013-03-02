@@ -1,0 +1,23 @@
+&record0
+ input_file     = '/mnt/howard/narccap/postprocess/Run.contemporary/MMOUT_DOMAIN1_1504' /
+
+&record1
+ start_year     =  1999
+ start_month    =  12 
+ start_day      =  22
+ start_hour     =  3
+ end_year       =  1999                          
+ end_month      =  12                          
+ end_day        =  31                         
+ end_hour       =  0                           
+ interval       = 10800 /
+
+&record2
+ pressure_bu_no_sfc_Pa = 100000 , 97500, 95000, 92500, 90000, 87500,
+                         85000, 82500, 80000, 77500, 75000, 72500, 70000,
+                         65000, 60000, 55000, 50000, 45000, 40000, 35000, 
+                         30000, 25000, 20000, 15000, 10000 /
+                                  
+
+&record3
+ print_info            = .false. /

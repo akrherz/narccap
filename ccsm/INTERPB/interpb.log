@@ -1,0 +1,330 @@
+Time periods to process
+Computed valid time 1999-12-22_03:00:00.
+Computed valid time 1999-12-22_06:00:00.
+Computed valid time 1999-12-22_09:00:00.
+Computed valid time 1999-12-22_12:00:00.
+Computed valid time 1999-12-22_15:00:00.
+Computed valid time 1999-12-22_18:00:00.
+Computed valid time 1999-12-22_21:00:00.
+Computed valid time 1999-12-23_00:00:00.
+Computed valid time 1999-12-23_03:00:00.
+Computed valid time 1999-12-23_06:00:00.
+Computed valid time 1999-12-23_09:00:00.
+Computed valid time 1999-12-23_12:00:00.
+Computed valid time 1999-12-23_15:00:00.
+Computed valid time 1999-12-23_18:00:00.
+Computed valid time 1999-12-23_21:00:00.
+Computed valid time 1999-12-24_00:00:00.
+Computed valid time 1999-12-24_03:00:00.
+Computed valid time 1999-12-24_06:00:00.
+Computed valid time 1999-12-24_09:00:00.
+Computed valid time 1999-12-24_12:00:00.
+Computed valid time 1999-12-24_15:00:00.
+Computed valid time 1999-12-24_18:00:00.
+Computed valid time 1999-12-24_21:00:00.
+Computed valid time 1999-12-25_00:00:00.
+Computed valid time 1999-12-25_03:00:00.
+Computed valid time 1999-12-25_06:00:00.
+Computed valid time 1999-12-25_09:00:00.
+Computed valid time 1999-12-25_12:00:00.
+Computed valid time 1999-12-25_15:00:00.
+Computed valid time 1999-12-25_18:00:00.
+Computed valid time 1999-12-25_21:00:00.
+Computed valid time 1999-12-26_00:00:00.
+Computed valid time 1999-12-26_03:00:00.
+Computed valid time 1999-12-26_06:00:00.
+Computed valid time 1999-12-26_09:00:00.
+Computed valid time 1999-12-26_12:00:00.
+Computed valid time 1999-12-26_15:00:00.
+Computed valid time 1999-12-26_18:00:00.
+Computed valid time 1999-12-26_21:00:00.
+Computed valid time 1999-12-27_00:00:00.
+Computed valid time 1999-12-27_03:00:00.
+Computed valid time 1999-12-27_06:00:00.
+Computed valid time 1999-12-27_09:00:00.
+Computed valid time 1999-12-27_12:00:00.
+Computed valid time 1999-12-27_15:00:00.
+Computed valid time 1999-12-27_18:00:00.
+Computed valid time 1999-12-27_21:00:00.
+Computed valid time 1999-12-28_00:00:00.
+Computed valid time 1999-12-28_03:00:00.
+Computed valid time 1999-12-28_06:00:00.
+Computed valid time 1999-12-28_09:00:00.
+Computed valid time 1999-12-28_12:00:00.
+Computed valid time 1999-12-28_15:00:00.
+Computed valid time 1999-12-28_18:00:00.
+Computed valid time 1999-12-28_21:00:00.
+Computed valid time 1999-12-29_00:00:00.
+Computed valid time 1999-12-29_03:00:00.
+Computed valid time 1999-12-29_06:00:00.
+Computed valid time 1999-12-29_09:00:00.
+Computed valid time 1999-12-29_12:00:00.
+Computed valid time 1999-12-29_15:00:00.
+Computed valid time 1999-12-29_18:00:00.
+Computed valid time 1999-12-29_21:00:00.
+Computed valid time 1999-12-30_00:00:00.
+Computed valid time 1999-12-30_03:00:00.
+Computed valid time 1999-12-30_06:00:00.
+Computed valid time 1999-12-30_09:00:00.
+Computed valid time 1999-12-30_12:00:00.
+Computed valid time 1999-12-30_15:00:00.
+Computed valid time 1999-12-30_18:00:00.
+Computed valid time 1999-12-30_21:00:00.
+Computed valid time 1999-12-31_00:00:00.  This is the ending time.
+Opened sigma level data for input.
+Opened MMOUTP file for output.
+Opened REGRID file for output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-22_03:00:00.
+Data date      = 1999-12-22_03:00:16.
+Opened file FILE_MMOUTP:1999-12-22_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-22_06:00:00.
+Data date      = 1999-12-22_06:00:32.
+Opened file FILE_MMOUTP:1999-12-22_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-22_09:00:00.
+Data date      = 1999-12-22_08:59:44.
+Opened file FILE_MMOUTP:1999-12-22_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-22_12:00:00.
+Opened file FILE_MMOUTP:1999-12-22_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-22_15:00:00.
+Data date      = 1999-12-22_15:00:16.
+Opened file FILE_MMOUTP:1999-12-22_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-22_18:00:00.
+Data date      = 1999-12-22_17:59:28.
+Opened file FILE_MMOUTP:1999-12-22_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-22_21:00:00.
+Data date      = 1999-12-22_20:59:44.
+Opened file FILE_MMOUTP:1999-12-22_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-23_00:00:00.
+Opened file FILE_MMOUTP:1999-12-23_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-23_03:00:00.
+Data date      = 1999-12-23_03:00:16.
+Opened file FILE_MMOUTP:1999-12-23_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-23_06:00:00.
+Data date      = 1999-12-23_06:00:32.
+Opened file FILE_MMOUTP:1999-12-23_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-23_09:00:00.
+Data date      = 1999-12-23_08:59:44.
+Opened file FILE_MMOUTP:1999-12-23_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-23_12:00:00.
+Opened file FILE_MMOUTP:1999-12-23_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-23_15:00:00.
+Data date      = 1999-12-23_15:00:16.
+Opened file FILE_MMOUTP:1999-12-23_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-23_18:00:00.
+Data date      = 1999-12-23_17:59:28.
+Opened file FILE_MMOUTP:1999-12-23_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-23_21:00:00.
+Data date      = 1999-12-23_20:59:44.
+Opened file FILE_MMOUTP:1999-12-23_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-24_00:00:00.
+Opened file FILE_MMOUTP:1999-12-24_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-24_03:00:00.
+Data date      = 1999-12-24_03:00:16.
+Opened file FILE_MMOUTP:1999-12-24_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-24_06:00:00.
+Data date      = 1999-12-24_06:00:32.
+Opened file FILE_MMOUTP:1999-12-24_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-24_09:00:00.
+Data date      = 1999-12-24_08:59:44.
+Opened file FILE_MMOUTP:1999-12-24_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-24_12:00:00.
+Opened file FILE_MMOUTP:1999-12-24_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-24_15:00:00.
+Data date      = 1999-12-24_15:00:16.
+Opened file FILE_MMOUTP:1999-12-24_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-24_18:00:00.
+Data date      = 1999-12-24_17:59:28.
+Opened file FILE_MMOUTP:1999-12-24_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-24_21:00:00.
+Data date      = 1999-12-24_20:59:44.
+Opened file FILE_MMOUTP:1999-12-24_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-25_00:00:00.
+Opened file FILE_MMOUTP:1999-12-25_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-25_03:00:00.
+Data date      = 1999-12-25_03:00:16.
+Opened file FILE_MMOUTP:1999-12-25_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-25_06:00:00.
+Data date      = 1999-12-25_06:00:32.
+Opened file FILE_MMOUTP:1999-12-25_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-25_09:00:00.
+Data date      = 1999-12-25_08:59:44.
+Opened file FILE_MMOUTP:1999-12-25_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-25_12:00:00.
+Opened file FILE_MMOUTP:1999-12-25_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-25_15:00:00.
+Data date      = 1999-12-25_15:00:16.
+Opened file FILE_MMOUTP:1999-12-25_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-25_18:00:00.
+Data date      = 1999-12-25_17:59:28.
+Opened file FILE_MMOUTP:1999-12-25_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-25_21:00:00.
+Data date      = 1999-12-25_20:59:44.
+Opened file FILE_MMOUTP:1999-12-25_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-26_00:00:00.
+Opened file FILE_MMOUTP:1999-12-26_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-26_03:00:00.
+Data date      = 1999-12-26_03:00:16.
+Opened file FILE_MMOUTP:1999-12-26_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-26_06:00:00.
+Data date      = 1999-12-26_06:00:32.
+Opened file FILE_MMOUTP:1999-12-26_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-26_09:00:00.
+Data date      = 1999-12-26_08:59:44.
+Opened file FILE_MMOUTP:1999-12-26_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-26_12:00:00.
+Opened file FILE_MMOUTP:1999-12-26_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-26_15:00:00.
+Data date      = 1999-12-26_15:00:16.
+Opened file FILE_MMOUTP:1999-12-26_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-26_18:00:00.
+Data date      = 1999-12-26_17:59:28.
+Opened file FILE_MMOUTP:1999-12-26_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-26_21:00:00.
+Data date      = 1999-12-26_20:59:44.
+Opened file FILE_MMOUTP:1999-12-26_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-27_00:00:00.
+Opened file FILE_MMOUTP:1999-12-27_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-27_03:00:00.
+Data date      = 1999-12-27_03:00:16.
+Opened file FILE_MMOUTP:1999-12-27_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-27_06:00:00.
+Data date      = 1999-12-27_06:00:32.
+Opened file FILE_MMOUTP:1999-12-27_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-27_09:00:00.
+Data date      = 1999-12-27_08:59:44.
+Opened file FILE_MMOUTP:1999-12-27_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-27_12:00:00.
+Opened file FILE_MMOUTP:1999-12-27_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-27_15:00:00.
+Data date      = 1999-12-27_15:00:16.
+Opened file FILE_MMOUTP:1999-12-27_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-27_18:00:00.
+Data date      = 1999-12-27_17:59:28.
+Opened file FILE_MMOUTP:1999-12-27_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-27_21:00:00.
+Data date      = 1999-12-27_20:59:44.
+Opened file FILE_MMOUTP:1999-12-27_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-28_00:00:00.
+Opened file FILE_MMOUTP:1999-12-28_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-28_03:00:00.
+Data date      = 1999-12-28_03:00:16.
+Opened file FILE_MMOUTP:1999-12-28_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-28_06:00:00.
+Data date      = 1999-12-28_06:00:32.
+Opened file FILE_MMOUTP:1999-12-28_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-28_09:00:00.
+Data date      = 1999-12-28_08:59:44.
+Opened file FILE_MMOUTP:1999-12-28_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-28_12:00:00.
+Opened file FILE_MMOUTP:1999-12-28_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-28_15:00:00.
+Data date      = 1999-12-28_15:00:16.
+Opened file FILE_MMOUTP:1999-12-28_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-28_18:00:00.
+Data date      = 1999-12-28_17:59:28.
+Opened file FILE_MMOUTP:1999-12-28_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-28_21:00:00.
+Data date      = 1999-12-28_20:59:44.
+Opened file FILE_MMOUTP:1999-12-28_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-29_00:00:00.
+Opened file FILE_MMOUTP:1999-12-29_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-29_03:00:00.
+Data date      = 1999-12-29_03:00:16.
+Opened file FILE_MMOUTP:1999-12-29_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-29_06:00:00.
+Data date      = 1999-12-29_06:00:32.
+Opened file FILE_MMOUTP:1999-12-29_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-29_09:00:00.
+Data date      = 1999-12-29_08:59:44.
+Opened file FILE_MMOUTP:1999-12-29_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-29_12:00:00.
+Opened file FILE_MMOUTP:1999-12-29_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-29_15:00:00.
+Data date      = 1999-12-29_15:00:16.
+Opened file FILE_MMOUTP:1999-12-29_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-29_18:00:00.
+Data date      = 1999-12-29_17:59:28.
+Opened file FILE_MMOUTP:1999-12-29_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-29_21:00:00.
+Data date      = 1999-12-29_20:59:44.
+Opened file FILE_MMOUTP:1999-12-29_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-30_00:00:00.
+Opened file FILE_MMOUTP:1999-12-30_00 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-30_03:00:00.
+Data date      = 1999-12-30_03:00:16.
+Opened file FILE_MMOUTP:1999-12-30_03 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-30_06:00:00.
+Data date      = 1999-12-30_06:00:32.
+Opened file FILE_MMOUTP:1999-12-30_06 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-30_09:00:00.
+Data date      = 1999-12-30_08:59:44.
+Opened file FILE_MMOUTP:1999-12-30_09 for intermediate format output.
+Found the end of the time period that we want: 1999-12-30_12:00:00.
+Opened file FILE_MMOUTP:1999-12-30_12 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-30_15:00:00.
+Data date      = 1999-12-30_15:00:16.
+Opened file FILE_MMOUTP:1999-12-30_15 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date = 1999-12-30_18:00:00.
+Data date      = 1999-12-30_17:59:28.
+Opened file FILE_MMOUTP:1999-12-30_18 for intermediate format output.
+Found the approximate end of the time period that we want.
+Requested date Successful completion 99999
+= 1999-12-30_21:00:00.
+Data date      = 1999-12-30_20:59:44.
+Opened file FILE_MMOUTP:1999-12-30_21 for intermediate format output.
+Found the end of the time period that we want: 1999-12-31_00:00:00.
+Opened file FILE_MMOUTP:1999-12-31_00 for intermediate format output.
+Completed all requested dates.  Exiting program.

@@ -1,0 +1,455 @@
+===================================================================
+RPB/README
+diff -r3.0 -r3.2
+2,3c2,3
+< VERSION 3 INTERPB PROGRAM (beta release)
+< (Updated March 8, 2001)
+---
+> VERSION 3 INTERPB PROGRAM (Release 3.1)
+> (Updated December 5, 2001)
+57c57
+< Edit namelist.input, and type interpb to execute the program.
+---
+> Edit namelist.input, and type ./interpb to execute the program.
+67c67
+< MMOUTP_DOMAINx:   pressure level data for GRAPH
+---
+> MMOUTP_DOMAINx:   pressure level data for GRAPH/RAWINS/LITTLE_R
+===================================================================
+RPB/namelist.input
+diff -r3.0 -r3.1
+2c2
+<  input_file     = '/headache2/gill/MM5/Run/MMOUT_DOMAIN1' /
+---
+>  input_file     = '../MM5/Run/MMOUT_DOMAIN1' /
+===================================================================
+RPB/.hidden/namelist.input
+diff -r3.0 -r3.1
+2c2
+<  input_file     = '/headache2/gill/MM5/Run/MMOUT_DOMAIN1' /
+---
+>  input_file     = '../MM5/Run/MMOUT_DOMAIN1' /
+===================================================================
+RPB/src/Makefile
+diff -r3.0 -r3.1
+12,13d11
+< LITTLE_F	=	$(SRC:.F=.f)
+< 
+17c15
+< 			module_phys_consts.o \
+---
+> 			module_map_utils.o module_phys_consts.o \
+19a18,19
+> LITTLE_F	=	$(SRC:.F=.f) $(MODULES:.o=.f)
+> 
+51c51,52
+< module_xyll.o:		../configure.rules ./Makefile ../Makefile
+---
+> module_xyll.o:		../configure.rules ./Makefile ../Makefile \
+> 			module_map_utils.o
+59a61
+> 			$(CPP) $(CPPFLAGS) module_map_utils.F > module_map_utils.f
+61a64
+> 			$(CPP) $(CPPFLAGS) module_xyll.F > module_xyll.f
+===================================================================
+RPB/src/interpb.F
+diff -r3.0 -r3.5
+93a94,98
+>    !  Map info, cross point lat/lon lower left corner point, for use in computing the
+>    !  dot point lat/lon arrays.
+> 
+>    REAL :: lat1c , lon1c
+> 
+276c281,289
+<       CALL read_data ( input_sigma , input_file , input_count , kxp , newcoord )
+---
+>       CALL read_data ( input_sigma , input_file , input_count , kxp , newcoord , interval )
+> 
+>       !  If this is MM5 input, and the forecast was "dry" (no Qv output), then we need to 
+>       !  create an artificial Qv field of zero.  This allows us to avoid any additional 
+>       !  logical tests as to the existence of Qv. 
+> 
+>       IF ( ( index .EQ. 11 ) .AND. ( bhi(3,13) .EQ. 1 ) ) THEN
+>          CALL add_qv
+>       END IF
+327c340
+<          CALL crs2dot ( alls_3d(nums_3d)%array(1,1,k) , imx , jmx ) 
+---
+>          CALL crs2dot ( alls_3d(nums_3d)%array(:,:,k) , imx , jmx ) 
+453a467,477
+>       !  We need the lower left corner of the latitude and longitude on cross points
+>       !  to compute the dot point arrays of latitude and longitude.
+> 
+>       DO loop = 1 , nums_2d
+>          IF      ( alls_2d(loop)%small_header%name(1:8) .EQ. 'LATITCRS' ) THEN
+>             lat1c = alls_2d(loop)%array(1,1)
+>          ELSE IF ( alls_2d(loop)%small_header%name(1:8) .EQ. 'LONGICRS' ) THEN
+>             lon1c = alls_2d(loop)%array(1,1)
+>          END IF
+>       END DO
+> 
+455,456c479,480
+<                          bhr(4,1) , bhr(9,1)/1000. , bhr(2,1) , bhr(3,1) , bhr(5,1) , bhr(6,1) , &
+<                          bhi(5,1) , bhi(6,1) , bhr(11,1) , bhr(10,1) , NINT(bhr(1,1)/bhr(9,1)) , bhi(7,1) )
+---
+>                          bhr(9,1)/1000. , bhr(3,1) , bhr(5,1) , bhr(6,1) , &
+>                          bhi(7,1) , lat1c , lon1c )
+608c632
+<          CALL fat1001 ( alls_3d(loop)%array(1,1,kxs) , alls_2d(index_pat1001)%array , alls_2d(index_ter)%array , &
+---
+>          CALL fat1001 ( alls_3d(loop)%array(:,:,kxs) , alls_2d(index_pat1001)%array , alls_2d(index_ter)%array , &
+632c656
+<                               itimes + 1 , interval , &
+---
+>                               itimes + 1 , interval , ptop , &
+639,643c663,667
+< !     CALL out_intermediate ( current_date(1:19) , imx , jmx , kxp , output_intermediate , &
+< !                             itimes + 1 , interval , &
+< !                             start_year , start_month , start_day , start_hour , &
+< !                             start_minute , start_second , start_frac , &
+< !                             newcoord , print_info )
+---
+>       CALL out_intermediate ( current_date(1:19) , imx , jmx , kxp , output_intermediate , &
+>                               itimes + 1 , interval , &
+>                               start_year , start_month , start_day , start_hour , &
+>                               start_minute , start_second , start_frac , &
+>                               newcoord , print_info )
+===================================================================
+RPB/src/module_all_io.F
+diff -r3.0 -r3.6
+116c116
+<    SUBROUTINE read_data ( unit_fg , file_fg , count_fg , kx , newcoord )
+---
+>    SUBROUTINE read_data ( unit_fg , file_fg , count_fg , kx , newcoord , interval )
+122c122
+<       INTEGER , INTENT(IN) :: unit_fg , kx
+---
+>       INTEGER , INTENT(IN) :: unit_fg , kx , interval
+235c235
+<             IF ( ABS(dts) .LE. bhr(1,bhi(1,1)) ) THEN
+---
+>             IF ( ( bhi(1,1) .EQ. 11 ) .AND. ( ABS(dts) .LE. bhr(2,12)/REAL(bhi(20,1)) ) ) THEN
+236a237,238
+>                PRINT '(A,A,A)','Requested date = ',current_date(1:19),'.'
+>                PRINT '(A,A,A)','Data date      = ',small_header%current_date(1:19),'.'
+268a271,272
+>                PRINT '(A,A,A)','Selected date from namelist = ',current_date(1:19),'.'
+>                PRINT '(A,A,A)','Date from input file        = ',small_header%current_date(1:19),'.'
+742a747
+>             CALL fill3d ( dum3d , imx , jmx , kxp , staggering )
+761c766
+<             ordering        = alls_2d(loop)%small_header%ordering
+---
+>             ordering        = 'YX  '
+771a777
+>             CALL fill2d ( dum2d , imx , jmx , staggering )
+809c815
+<                               imx , jmx , kxp , output_regridder , itimes , interval , &
+---
+>                               imx , jmx , kxp , output_regridder , itimes , interval , ptop , &
+823a830,831
+>       REAL , INTENT(IN)  :: ptop
+> 
+874a883,890
+>          !  Change expanded domain option to non-expanded domain option in terrain header
+> 
+>          bhi( 8,1) = 0
+>          if ( bhi(13,1) == 1 ) then
+>               bhi( 9,1) = bhi( 5,1) 
+>               bhi(10,1) = bhi( 6,1) 
+>          endif
+> 
+906a923,924
+>          bhr ( 2,index) = ptop
+>          bhrc( 2,index) = 'Top pressure used in analysis, pressure defining model lid (Pa)                 '
+936a955
+>             CALL fill3d ( dum3d , imx , jmx , kxp , staggering )
+982a1002
+>                CALL fill2d ( dum2d , imx , jmx , staggering )
+1092a1113,1114
+>       ELSE
+>          PRINT '(A,A,A)','Opened file FILE_MMOUTP:',current_date19(1:13),' for intermediate format output.'
+1367a1390,1444
+> 
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> 
+>    SUBROUTINE add_qv
+> 
+>       IMPLICIT NONE
+> 
+>       INTEGER :: i , j , ks , kp
+> 
+>       !  The purpose for this routine is to artificially fill in an array of zero
+>       !  for the missing Qv array.  Why is it missing?  This may be model output that
+>       !  was run as a dry case.  Actually, I don't think there is any other way.
+> 
+>       !  How large to allocate the 3d arrays for the sigma and pressure Qv.  They are the
+>       !  same size as the other 3d sigma and pressure arrays.
+> 
+>       i  =  alls_3d(nums_3d)%small_header%end_dims(1)
+>       j  =  alls_3d(nums_3d)%small_header%end_dims(2)
+>       ks =  alls_3d(nums_3d)%small_header%end_dims(3)
+>       kp =  allp_3d(nump_3d)%small_header%end_dims(3)
+> 
+>       !  ALLOCATE the two 3d arrays.
+> 
+>       ALLOCATE ( alls_3d(nums_3d+1)%array(i,j,ks) ) 
+>       ALLOCATE ( allp_3d(nump_3d+1)%array(i,j,kp) ) 
+> 
+>       !  Fill the sigma level Qv array with zeros.  The pressure level guy will be
+>       !  interpolated a bit later.  All we need to do is have the sigma level data 
+>       !  available.
+> 
+>        alls_3d(nums_3d+1)%array = 0.
+> 
+>       !  Fill in all of the header things.
+> 
+>       alls_3d(nums_3d+1)%small_header = alls_3d(nums_3d)%small_header
+>       allp_3d(nump_3d+1)%small_header = allp_3d(nump_3d)%small_header
+> 
+>       !  We have to be cross point staggered.
+> 
+>       alls_3d(nums_3d+1)%small_header%staggering(1:4) = 'C   '
+>       allp_3d(nump_3d+1)%small_header%staggering(1:4) = 'C   '
+> 
+>       !  Give this lovely data a new name.
+> 
+>       alls_3d(nums_3d+1)%small_header%name(1:8) = 'Q       '
+>       allp_3d(nump_3d+1)%small_header%name(1:8) = 'Q       '
+> 
+>       !  Since we have added an array for each of the sigma and pressure 3d array holders,
+>       !  we need to bump their respective counters.
+> 
+>       nums_3d = nums_3d + 1
+>       nump_3d = nump_3d + 1
+>        
+>    END SUBROUTINE add_qv
+===================================================================
+RPB/src/module_util.F
+diff -r3.0 -r3.1
+161a162,216
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> 
+>    SUBROUTINE fill3d ( dum3d , imx , jmx , kxp , staggering )
+> 
+>       IMPLICIT NONE
+> 
+>       INTEGER , INTENT(IN) :: imx , jmx , kxp
+>       REAL , DIMENSION(imx,jmx,kxp) , INTENT(INOUT) :: dum3d
+>       CHARACTER (LEN=4) , INTENT(IN) :: staggering
+> 
+>       INTEGER :: i , j , k
+> 
+>       IF ( staggering(1:1) .EQ. 'C' ) THEN
+> 
+>          DO k = 1 , kxp
+>             DO j = 1 , jmx-1
+>                dum3d(imx,j,k) = dum3d(imx-1,j,k) 
+>             END DO 
+>             DO i = 1 , imx
+>                dum3d(i,jmx,k) = dum3d(i,jmx-1,k) 
+>             END DO 
+>          END DO
+> 
+>       END IF
+> 
+>    END SUBROUTINE fill3d
+> 
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+> 
+>    SUBROUTINE fill2d ( dum2d , imx , jmx , staggering )
+> 
+>       IMPLICIT NONE
+> 
+>       INTEGER , INTENT(IN) :: imx , jmx 
+>       REAL , DIMENSION(imx,jmx) , INTENT(INOUT) :: dum2d
+>       CHARACTER (LEN=4) , INTENT(IN) :: staggering
+> 
+>       INTEGER :: i , j
+> 
+>       IF ( staggering(1:1) .EQ. 'C' ) THEN
+> 
+>          DO j = 1 , jmx-1
+>             dum2d(imx,j) = dum2d(imx-1,j) 
+>          END DO 
+>          DO i = 1 , imx
+>             dum2d(i,jmx) = dum2d(i,jmx-1) 
+>          END DO 
+> 
+>       END IF
+> 
+>    END SUBROUTINE fill2d
+> 
+> 
+===================================================================
+RPB/src/module_xyll.F
+diff -r3.0 -r3.1
+3,4c3,5
+<       REAL , PARAMETER :: a = 6370.
+<       REAL , PARAMETER :: conv = 180. / 3.14159265359
+---
+>    USE map_utils
+> 
+>    TYPE(proj_info) :: projx
+11,12c12,13
+<                             xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                             ixc , jxc , xstart , ystart , iratio , projection ) 
+---
+>                             ds , xlonc , truelat1 , truelat2 , &
+>                             projection , lat1c , lon1c ) 
+18,19c19,21
+<       REAL , INTENT(IN) :: xn , ds , xlatc , xlonc , truelat1 , truelat2 , xstart , ystart 
+<       INTEGER , INTENT(IN) :: imx , jmx , ixc , jxc , iratio , projection
+---
+>       REAL , INTENT(IN) :: ds , xlonc , truelat1 , truelat2
+>       REAL , INTENT(IN) :: lat1c , lon1c
+>       INTEGER , INTENT(IN) :: imx , jmx , projection
+29a32
+>          CALL map_set(proj_lc  ,lat1c,lon1c,ds*1000.,xlonc,truelat1,truelat2,jmx-1,imx-1,projx)
+32,33c35
+<                CALL xyll_lambert  ( REAL(j) , REAL(i) , xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                                     ixc , jxc , xstart , ystart , iratio , lat(i,j) , lon(i,j) )
+---
+>                CALL ij_to_latlon ( projx , REAL(j)-0.5 , REAL(i)-0.5 , lat(i,j) , lon(i,j) )
+36a39
+>          CALL map_set(proj_ps  ,lat1c,lon1c,ds*1000.,xlonc,truelat1,truelat2,jmx-1,imx-1,projx)
+39,40c42
+<                CALL xyll_polar    ( REAL(j) , REAL(i) , xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                                     ixc , jxc , xstart , ystart , iratio , lat(i,j) , lon(i,j) )
+---
+>                CALL ij_to_latlon ( projx , REAL(j)-0.5 , REAL(i)-0.5 , lat(i,j) , lon(i,j) )
+43a46
+>          CALL map_set(proj_merc,lat1c,lon1c,ds*1000.,xlonc,truelat1,truelat2,jmx-1,imx-1,projx)
+46,47c49
+<                CALL xyll_mercator ( REAL(j) , REAL(i) , xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                                     ixc , jxc , xstart , ystart , iratio , lat(i,j) , lon(i,j) )
+---
+>                CALL ij_to_latlon ( projx , REAL(j)-0.5 , REAL(i)-0.5 , lat(i,j) , lon(i,j) )
+53,176d54
+< 
+< !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+< 
+<    SUBROUTINE xyll_lambert ( x , y , xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                              ixc , jxc , xstart , ystart , iratio , &
+<                              xlat , xlon )
+< 
+<       IMPLICIT NONE
+< 
+<       !  Input variables.
+< 
+<       REAL , INTENT(IN) :: x , y , xn , ds , xlatc , xlonc , truelat1 , truelat2
+<       REAL , INTENT(IN) :: xstart , ystart
+<       INTEGER , INTENT(IN) :: ixc , jxc , iratio
+<       
+<       !  Output lat/lon.
+< 
+<       REAL , INTENT(OUT) :: xlat , xlon
+< 
+<       !  Local variables.
+< 
+<       REAL :: centeri , centerj , phi1 , phic , cnst , yyc , xx, yy, r , phi
+<       INTEGER :: ixbig , jxbig
+< 
+<       ixbig = (ixc-1)*iratio+1
+<       jxbig = (jxc-1)*iratio+1
+<       centeri = REAL((ixbig+1)/2)
+<       centerj = REAL((jxbig+1)/2)
+< 
+<       phi1 = (SIGN(90.,xlatc) - truelat1) / conv
+<       phic =  ( SIGN(90.,xlatc) - xlatc ) / conv
+<       cnst = a*SIN(phi1)/(xn*TAN(phi1/2.)**xn)
+<       yyc = -1.*cnst*(TAN(phic/2.)**xn)
+<       xx = (x+xstart-1.-centerj)*ds
+<       yy = (y+ystart-1.-centeri)*ds+yyc
+<       r = SQRT(xx*xx+yy*yy)
+<       phi = 2.0* ATAN ( ( (r*xn/(SIN(phi1)*a))**(1./xn) ) *TAN(phi1/2.) ) * conv
+<       xlat = SIGN(90.,xlatc) - phi
+<       xlon = xlonc+ ( ASIN(xx/r) ) * conv /xn
+< 
+<    END SUBROUTINE xyll_lambert
+< 
+< !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+< 
+<    SUBROUTINE xyll_polar ( x , y , xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                            ixc , jxc , xstart , ystart , iratio , &
+<                            xlat , xlon )
+< 
+<       IMPLICIT NONE
+< 
+<       !  Input variables.
+< 
+<       REAL , INTENT(IN) :: x , y , xn , ds , xlatc , xlonc , truelat1 , truelat2
+<       REAL , INTENT(IN) :: xstart , ystart
+<       INTEGER , INTENT(IN) :: ixc , jxc , iratio
+<       
+<       !  Output lat/lon.
+< 
+<       REAL , INTENT(OUT) :: xlat , xlon
+< 
+<       !  Local variables.
+< 
+<       REAL :: centeri , centerj , psi1 , phic , c1 , xx, yy, pole
+<       INTEGER :: ixbig , jxbig
+< 
+<       ixbig = (ixc-1)*iratio+1
+<       jxbig = (jxc-1)*iratio+1
+<       centeri = REAL(ixbig+1)/2.
+<       centerj = REAL(jxbig+1)/2.
+< 
+<       pole = SIGN(90.,xlatc) / conv
+<       phic=xlatc / conv
+<       psi1=truelat1 / conv
+<       xx=(x+xstart-1.-centerj)* ds
+<       yy=-a*SIN(pole-phic)* ( ( 1.+COS(pole-psi1)) / (1.+cos(pole-phic))  ) + (y+ystart-1.-centeri)* ds
+<       c1=SIGN(1.,xlatc) * 1./a * SQRT(xx**2 + yy**2) * (  1./(1. + COS(pole-psi1)))
+<       xlat=( pole - 2.*ATAN(c1) ) * conv
+<       xlon= ( xlonc/conv + ATAN2(xx,-1.*SIGN(1.,xlatc)*yy) ) * conv
+<       IF      ( xlon .LT. -180 ) THEN
+<          xlon = xlon + 360
+<       ELSE IF ( xlon .GT.  180 ) THEN
+<          xlon = xlon - 360
+<       END IF
+< 
+<    END SUBROUTINE xyll_polar
+< 
+< !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+< 
+<    SUBROUTINE xyll_mercator ( x , y , xn , ds , xlatc , xlonc , truelat1 , truelat2 , &
+<                               ixc , jxc , xstart , ystart , iratio , &
+<                               xlat , xlon )
+< 
+<       IMPLICIT NONE
+< 
+<       !  Input variables.
+< 
+<       REAL , INTENT(IN) :: x , y , xn , ds , xlatc , xlonc , truelat1 , truelat2
+<       REAL , INTENT(IN) :: xstart , ystart
+<       INTEGER , INTENT(IN) :: ixc , jxc , iratio
+<       
+<       !  Output lat/lon.
+< 
+<       REAL , INTENT(OUT) :: xlat , xlon
+< 
+<       !  Local variables.
+< 
+<       REAL :: centeri , centerj , phic , cell , xx, yy , ycntr
+<       INTEGER :: ixbig , jxbig
+< 
+<       ixbig = (ixc-1)*iratio+1
+<       jxbig = (jxc-1)*iratio+1
+<       centeri = REAL(ixbig+1)/2.
+<       centerj = REAL(jxbig+1)/2.
+< 
+<       phic =xlatc/conv
+<       cell = COS(phic)/(1.0+SIN(phic))
+<       ycntr= -a*LOG(cell)
+<       xx   = (x+xstart-1.-centerj)*ds
+<       yy   = (y+ystart-1.-centeri)*ds+ycntr
+<       xlon = xlonc + (xx/a) * conv
+<       cell = EXP(yy/a)
+<       xlat = 2.0*(conv*ATAN(cell)) - SIGN(90.,xlatc)
+< 
+<    END SUBROUTINE xyll_mercator
