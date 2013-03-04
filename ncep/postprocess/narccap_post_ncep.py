@@ -23,7 +23,7 @@ else:
     PLEVEL = None
 META  = {}
 if RUNID == 'C':
-    DATADIR = "Run.NCEP"
+    DATADIR = "../Run.NCEP"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP present-day climate using NCEP/DOE Reanalysis'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'present-day climate using NCEP/DOE Reanalysis'
@@ -98,6 +98,15 @@ VARS = {
           'cell_methods'  : 'time: Instantaneous',
             'long_name'  : 'Snow Depth',
             'standard_name'  : 'surface_snow_thickness'},
+ 'swe'  : {'units'  : 'mm',
+            'source' : 'MMOUTP',
+            'ncsource'  : 'weasd',
+          'table' : 3,
+          'interval' : HOURLY3,
+            'coordinates'  : "lon lat",
+          'cell_methods'  : 'time: Instantaneous',
+            'long_name'  : 'Snow Water Equivalent',
+            'standard_name'  : 'lwe_thickness_of_surface_snow_amount'},
  'rsut'  : {'units'  : 'W m-2',
             'source' : 'NCOUT',
             'ncsource'  : 'osw1',
