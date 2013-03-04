@@ -38,7 +38,7 @@ if RUNID == 'S':
     mx.DateTime.DateTime(2071,1,1)
     ]
 if RUNID == 'C':
-    DATADIR = "Run.contemporary"
+    DATADIR = "../Run.contemporary"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP contemporary from the Community Climate System Model (CCSM)'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'contemporary from CCSM'
@@ -717,7 +717,7 @@ def compute1d(VNAME, fp, ts0, ts1):
             nc2.close()
             #print 'data IN', numpy.average(data)
             #print 'data2 IN', numpy.average(data2)
-            if numpy.max(data2) != 0:
+            if numpy.max(data2) != 0 and VNAME not in ['sic',]:
                 data = VARS[VNAME]['npfunc2'](data, data2)
             else:
                 print 'Skipping TS2 Computation'
