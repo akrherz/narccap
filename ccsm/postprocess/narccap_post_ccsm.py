@@ -50,7 +50,7 @@ if RUNID == 'C':
     mx.DateTime.DateTime(1986,1,1),
     mx.DateTime.DateTime(1991,1,1),
     mx.DateTime.DateTime(1996,1,1),
-    mx.DateTime.DateTime(2001,1,1)
+    mx.DateTime.DateTime(1999,12,29)
     ]
 
 HOURLY3, DAILY = (1,2)
