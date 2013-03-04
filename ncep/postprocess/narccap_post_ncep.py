@@ -729,8 +729,8 @@ def compute3h(VNAME, fp, ts0, ts1):
     """
     lookfor = ts0.strftime("minutes since %Y-%m-%d")                            
     # Figure out when our data begins!                                          
-    for i in range(1,1500):                                                     
-        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)    
+    for i in range(1,1226):   
+        fp2 = '%s/MMOUTP_DOMAIN1_%04i.nc' % (DATADIR,  i,)    
         nc2 = netCDF4.Dataset(fp2, 'r')                                         
         # minutes since 1983-11-01 03:00:16                                     
         if nc2.variables['time'].units.find(lookfor) == 0:                      
