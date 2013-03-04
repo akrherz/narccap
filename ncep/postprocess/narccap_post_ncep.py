@@ -487,6 +487,7 @@ VARS = {
    'standard_name' : 'wind_speed_of_gust',
    'cell_methods' : 'time: maximum (interval: 24 hours)',
    'npfunc': numpy.max,
+   'npfunc2': numpy.maximum,
    'coordinates': 'lon lat height',
  },
  'sic' : {
@@ -709,7 +710,7 @@ def compute1d(VNAME, fp, ts0, ts1):
             nc2.close()
             #print 'data IN', numpy.average(data)
             #print 'data2 IN', numpy.average(data2)
-            if numpy.max(data2) != 0:
+            if numpy.max(data2) != 0 and VNAME not in ['sic',]:
                 data = VARS[VNAME]['npfunc2'](data, data2)
             else:
                 print 'Skipping TS2 Computation'
