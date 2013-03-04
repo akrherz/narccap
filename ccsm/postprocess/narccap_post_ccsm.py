@@ -503,6 +503,7 @@ VARS = {
    'standard_name' : 'wind_speed_of_gust',
    'cell_methods' : 'time: maximum within days',
    'npfunc': numpy.max,
+   'npfunc2': numpy.maximum,
    'coordinates': 'lon lat height',
  },
  'sic' : {
