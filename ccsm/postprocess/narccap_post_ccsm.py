@@ -35,7 +35,7 @@ if RUNID == 'S':
     mx.DateTime.DateTime(2056,1,1),
     mx.DateTime.DateTime(2061,1,1),
     mx.DateTime.DateTime(2066,1,1),
-    mx.DateTime.DateTime(2071,1,1)
+    mx.DateTime.DateTime(2070,12,29)
     ]
 if RUNID == 'C':
     DATADIR = "../Run.contemporary"
