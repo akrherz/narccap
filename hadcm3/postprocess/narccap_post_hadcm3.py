@@ -1,6 +1,6 @@
 """
 Uber script to generate NARCCAP archive specification files
-This consumes the resulf of running the preprocess.py script
+This consumes the result of running the preprocess.py script
 """
 import netCDF4
 import mx.DateTime

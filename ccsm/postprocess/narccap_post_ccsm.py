@@ -1,6 +1,6 @@
 """
 Uber script to generate NARCCAP archive specification files
-This consumes the resulf of running the preprocess.py script
+This consumes the result of running the preprocess.py script
 """
 import netCDF4
 import mx.DateTime
@@ -8,7 +8,6 @@ import numpy
 import sys
 sys.path.insert(0, "../../pylib")
 import common
-import os
 
 if len(sys.argv) < 3:
     print 'Usage: python narccap_post.py RUNID VNAME'
