@@ -6,6 +6,8 @@ import netCDF4
 import mx.DateTime
 import numpy
 import sys
+sys.path.insert(0, "../../pylib")
+import common
 import os
 
 if len(sys.argv) < 3:
@@ -58,468 +60,6 @@ HOURLY3, DAILY = (1,2)
 LOOP1 = None
 LOOP2 = None
 
-VARS = {
- 'prw'  : {'units'  : 'kg m-2',
-            'source' : 'MMOUTP',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-          'cell_methods'  : 'time: Instantaneous',
-            'long_name'  : 'Precipitable Water',
-            'standard_name'  : 'precipitable_water'},
- 'zmla'  : {'units'  : 'm',
-            'source' : 'MMOUTP',
-            'ncsource'  : 'pbl_hgt',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-          'cell_methods'  : 'time: Instantaneous',
-            'long_name'  : 'Atmospheric Boundary Layer Thickness',
-            'standard_name'  : 'atmosphere_boundary_layer_thickness'},
- 'tauv'  : {'units'  : 'Pa',
-            'source' : 'NCOUT',
-            'ncsource'  : 'vmomflux',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'positive': 'down',
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Downward Flux of Northward Momentum',
-            'standard_name'  : 'surface_downward_northward_flux'},
- 'tauu'  : {'units'  : 'Pa',
-            'source' : 'NCOUT',
-            'ncsource'  : 'umomflux',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'positive': 'down',
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Downward Flux of Eastern Momentum',
-            'standard_name'  : 'surface_downward_eastward_flux'},
- 'snm'  : {'units'  : 'kg m-2 s-1',
-            'source' : 'NCOUT',
-            'ncsource'  : 'snowmelt',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Snow Melt',
-            'standard_name'  : 'surface_snow_melt_flux'},
- 'snd'  : {'units'  : 'm',
-            'source' : 'MMOUTP',
-            'ncsource'  : 'snowh',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-          'cell_methods'  : 'time: Instantaneous',
-            'long_name'  : 'Snow Depth',
-            'standard_name'  : 'surface_snow_thickness'},
- 'swe'  : {'units'  : 'mm',
-            'source' : 'MMOUTP',
-            'ncsource'  : 'weasd',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-          'cell_methods'  : 'time: Instantaneous',
-            'long_name'  : 'Snow Water Equivalent',
-            'standard_name'  : 'lwe_thickness_of_surface_snow_amount'},
- 'rsut'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'osw1',
-             'positive': 'up',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'TOA Reflected Shortwave Radiation',
-            'standard_name'  : 'toa_outgoing_shortwave_flux'},
- 'rsus'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'osw1', 
-             'positive': 'up',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Upwelling Shortwave Radiation',
-            'standard_name'  : 'surface_upwelling_shortwave_flux_in_air'},
- 'rsdt'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'toasw', 
-            'quo' : 1.0/18.0,
-             'positive': 'down',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'TOA Incident Shortwave Radiation',
-            'standard_name'  : 'toa_incoming_shortwave_flux'},
- 'rlut'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'olw1',
-             'positive': 'up',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Outgoing Longwave Radiation',
-            'standard_name'  : 'toa_outgoing_longwave_flux'},
- 'rlus'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'ulw1',
-             'positive': 'up',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Upwelling Longwave Radiation',
-            'standard_name'  : 'surface_upwelling_longwave_flux_in_air'},
- 'rlds'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'glw1',
-             'positive': 'down',
-          'table' : 3,
-          'interval' : HOURLY3,
-            'coordinates'  : "lon lat",
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Downwelling Longwave Radiation',
-            'standard_name'  : 'surface_downwelling_longwave_flux_in_air'},
- 'psl' : {'source' : 'MMOUTP',
-          'ncsource'  : 'psealvlc',
-          'units'  : 'Pa',
-          'table' : 3,
-          'interval' : HOURLY3,
-          'coordinates' : "lon lat",
-          'cell_methods'  : 'time: Instantaneous',
-          'long_name'  : 'Sea Level Pressure',
-          'standard_name'  : 'air_pressure_at_sea_level'},
- 'mrso'  : {'units'  : 'kg m-2',
-                'table' : 3,
-            'source' : 'MMOUTP',
-            'ncsource'  : None,
-            'coordinates'  : "lon lat",
-          'interval' : HOURLY3,
-          'cell_methods'  : 'time: Instantaneous',
-            'long_name'  : 'Total Soil Moisture Content',
-            'standard_name'  : 'soil_moisture_content'},
- 'mrros'  : {'units'  : 'kg m-2 s-1',
-		'table' : 3,
-            'source' : 'MMOUTP',
-            'ncsource'  : None,
-            'quo': 10800,
-            'coordinates'  : "lon lat",
-          'interval' : HOURLY3,
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Runoff',
-            'standard_name'  : 'surface_runoff_flux'},
- 'mrro'  : {'units'  : 'kg m-2 s-1',
-            'source' : 'MMOUTP',
-            'ncsource'  : None,
-            'quo': 10800,
-            'coordinates'  : "lon lat",
-          'interval' : HOURLY3,
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface and Subsurface Runoff',
-            'standard_name'  : 'runoff_flux'},
- 'mrfso'  : {'units'  : 'kg m-2',
-            'source' : 'MMOUTP',
-            'ncsource'  : None,
-            'coordinates'  : "lon lat",
-          'interval' : HOURLY3,
-          'cell_methods'  : 'time: Instantaneous',
-            'long_name'  : 'Soil Frozen Water Content',
-            'standard_name'  : 'soil_frozen_water_content'},
- 'evps'  : {'units'  : 'kg m-2 s-1',
-            'source' : 'NCOUT',
-            'ncsource'  : 'surfevap',
-            'coordinates'  : "lon lat",
-          'interval' : HOURLY3,
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Evaporation of Condensed Water',
-            'standard_name'  : 'water_evaporation_flux'},
- 'clt'  : {'units'  : '1',
-            'source' : 'NCOUT',
-            'ncsource'  : 'totcldavG',
-            'coordinates'  : "lon lat",
-          'interval' : HOURLY3,
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Total Cloud Fraction',
-            'standard_name'  : 'cloud_area_fraction'},
- 'hfss'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'hfx1',
-            'coordinates'  : "lon lat",
-             'positive': 'up',
-          'interval' : HOURLY3,
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Sensible Heat Flux',
-            'standard_name'  : 'surface_upward_sensible_heat_flux'},
- 'hfls'  : {'units'  : 'W m-2',
-            'source' : 'NCOUT',
-            'ncsource'  : 'qfx1',
-            'coordinates'  : "lon lat",
-             'positive': 'up',
-          'interval' : HOURLY3,
-            'cell_methods'  : 'time: average (interval: 3 hours)',
-            'long_name'  : 'Surface Latent Heat Flux',
-            'standard_name'  : 'surface_upward_latent_heat_flux'},
- 'vas' : {'source' : 'MMOUTP',
-          'ncsource'  : 'v10',
-          'units'  : 'm s-1',
-          'interval' : HOURLY3,
-          'coordinates'  : 'lon lat height',
-          'cell_methods'  : 'time: Instantaneous',
-          'long_name'  : 'Meridional Surface Wind Speed',
-          'standard_name'  : 'northward_wind'},
- 'uas' : {'source' : 'MMOUTP',
-          'ncsource'  : 'u10',
-          'units'  : 'm s-1',
-          'interval' : HOURLY3,
-          'coordinates'  : 'lon lat height',
-          'cell_methods'  : 'time: Instantaneous',
-          'long_name'  : 'Zonal Surface Wind Speed',
-          'standard_name'  : 'eastward_wind'},
- 'ts' : {
-   'ncsource': 'ground_t', # was tseasfc
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'table': 3,
-   'long_name' : 'Surface (skin) Temperature',
-   'units' : 'K',
-   'standard_name' : 'surface_temperature',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat',
- },
- 'rsds' : {
-   'ncsource': 'gsw1',
-   'interval' : HOURLY3,
-   'source' : 'NCOUT',
-   'long_name' : 'Surface Downwelling Shortwave Radiation',
-   'units' : 'W m-2',
-   'standard_name' : 'surface_downwelling_shortwave_flux_in_air',
-   'cell_methods' : 'time: mean (interval: 3 hours)',
-   'coordinates': 'lon lat',
- },
- 'huss' : {
-           'ncsource' : 'q2',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Surface Specific Humidity',
-   'units' : 'kg kg-1',
-   'standard_name' : 'specific_humidity',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat height',
- },
- 'ta' : {
-   '3d': True,
-    'ncsource' : 't',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Temperature',
-   'units' : 'K',
-   'standard_name' : 'air_temperature',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'ua' : {
-   '3d': True,
-    'ncsource' : 'u',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Zonal Wind Component',
-   'units' : 'm s-1',
-   'standard_name' : 'eastward_wind',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'wa' : {
-   '3d': True,
-    'ncsource' : 'w',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Vertical Wind Component',
-   'units' : 'm s-1',
-   'standard_name' : 'upward_air_velocity',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'va' : {                                                                       
-   '3d': True,                                                                  
-    'ncsource' : 'v',                                                           
-   'interval' : HOURLY3,                                                        
-   'source' : 'MMOUTP',                                                         
-   'long_name' : 'Meridional Wind Component',                                   
-   'units' : 'm s-1',                                                           
-   'standard_name' : 'northward_wind',                                          
-   'cell_methods' : 'time: instantaneous',                                         'coordinates': 'lon lat plev',                                               
- },  
- 'zg' : {
-   '3d': True,
-    'ncsource' : 'h',
-   'table': 3,
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : '500 hPa Geopotential Height',
-   'units' : 'm',
-   'standard_name' : 'geopotential_height',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'clw' : {
-   '3d': True,
-    'ncsource' : 'clw',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Cloud Liquid Water Fraction of Layer',
-   'units' : '1',
-   'standard_name' : 'mass_fraction_of_cloud_liquid_water_in_air',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'cli' : {
-   '3d': True,
-    'ncsource' : 'ice',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Cloud Ice Fraction of Layer',
-   'units' : '1',
-   'standard_name' : 'mass_fraction_of_cloud_ice_in_air',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'hus' : {
-   '3d': True,
-    'ncsource' : 'q',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Specific Humidity',
-   'units' : 'kg kg-1',
-   'standard_name' : 'specific_humidity',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat plev',
- },
- 'prc' : {
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'ncsource' : 'rain_con',
-   'table': 3,
-   'quo' : 1080.0, # cm to mm to /s
-   'long_name' : 'Convective Precipitation',
-   'units' : 'kg m-2 s-1',
-   'standard_name' : 'convective_precipitation_flux',
-   'cell_methods' : 'time: mean (interval: 3 hours)',
-   'coordinates': 'lon lat',
- },
- 'pr' : {
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Precipitation',
-   'units' : 'kg m-2 s-1',
-   'quo' : 1080.0, # cm to mm to /s
-   'standard_name' : 'precipitation_flux',
-   'cell_methods' : 'time: mean (interval: 3 hours)',
-   'coordinates': 'lon lat',
- },
- 'soilt4' : {
-    'ncsource': 'soil_t_4',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Soil Temperature at Layer 4',
-   'units' : 'K',
-   'standard_name' : 'unknown',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat height',
- },
- 'tas' : {
-    'ncsource': 't2',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Surface Air Temperature',
-   'units' : 'K',
-   'standard_name' : 'air_temperature',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat height',
- },
- 'ps' : {
-    'ncsource': 'psfc',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Surface Pressure',
-   'units' : 'Pa',
-   'standard_name' : 'surface_air_pressure',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat',
- },
- 'soilt1' : {
-    'ncsource': 'soil_t_1',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Soil Temperature at Layer 1',
-   'units' : 'K',
-   'standard_name' : 'unknown',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat height',
- },
- 'soilm3' : {
-    'ncsource': 'soil_m_3',
-   'interval' : HOURLY3,
-   'source' : 'MMOUTP',
-   'long_name' : 'Soil Moisture at Layer 3',
-   'units' : 'm3 m-3',
-   'standard_name' : 'unknown',
-   'cell_methods' : 'time: instantaneous',
-   'coordinates': 'lon lat height',
- },
- 'tasmax' : {
-    'ncsource': 'tmax',
-   'interval' : DAILY,
-   'source' : 'NCOUT',
-   'long_name' : 'Maximum Daily Surface Air Temperature',
-   'units' : 'K',
-   'standard_name' : 'air_temperature',
-   'cell_methods' : 'time: maximum within days',
-   'npfunc': numpy.max,
-   'npfunc2': numpy.maximum,
-   'coordinates': 'lon lat height',
- },
- 'tasmin' : {
-    'ncsource': 'tmin',
-   'interval' : DAILY,
-   'source' : 'NCOUT',
-   'long_name' : 'Minimum Daily Surface Air Temperature',
-   'units' : 'K',
-   'standard_name' : 'air_temperature',
-   'cell_methods' : 'time: minimum within days',
-   'npfunc': numpy.min,
-   'npfunc2': numpy.minimum,
-   'coordinates': 'lon lat height',
- },
- 'spdmax' : {
-    'ncsource': 'maxwnd',
-   'interval' : DAILY,
-   'source' : 'NCOUT',
-   'long_name' : 'Maximum Daily 10-Meter Wind Speed',
-   'units' : 'm s-1',
-   'standard_name' : 'wind_speed_of_gust',
-   'cell_methods' : 'time: maximum within days',
-   'npfunc': numpy.max,
-   'npfunc2': numpy.maximum,
-   'coordinates': 'lon lat height',
- },
- 'sic' : {
-    'ncsource': 'seaice',
-   'interval' : DAILY,
-   'source' : 'MMOUTP',
-   'long_name' : 'Daily Average Sea-ice Fraction',
-   'units' : 'fraction in [0,1]',
-   'standard_name' : 'sea_ice_fraction',
-   'cell_methods' : 'time: instantaneous',
-   'npfunc': numpy.average,
-   'coordinates': 'lon lat',
- }
-}
-
-
 
 def create_file(VNAME, ts0, ts1):
     """
@@ -538,13 +78,13 @@ def create_file(VNAME, ts0, ts1):
     nc.realization = '1'
     nc.experiment_id = META['experiment_id']
     # Should be table 1 for daily ?
-    nc.table_id = 'Table %s' % (VARS[VNAME].get('table', 1),)
+    nc.table_id = 'Table %s' % (common.VARS[VNAME].get('table', 1),)
     nc.project_id = 'NARCCAP'
     nc.source = 'MM5(2002): atmosphere: MM5v3.6.3 non-hydrostatic; sst/sea ice: AMIPII; land: Noah;  Convection: Kain-Fritsch 2; Radiation: RRTM; PBL: MRF; Explicit Moisture: Reisner Mixed-Phase; Buffer: 15 point exponential; Horizontal Resolution: 50km; Vertical Levels: 24'
     nc.institution = 'ISU (Iowa State University, Ames, Iowa, USA)'
 
     tsteps = int((ts1.year - ts0.year) * 365) 
-    if VARS[VNAME]['interval'] == HOURLY3:
+    if common.VARS[VNAME]['interval'] == HOURLY3:
         tsteps *= 8
     print ' + Created NetCDF File %s has %s time steps' % (fp, tsteps)
     nc.createDimension('time', 0)
@@ -605,20 +145,20 @@ def create_file(VNAME, ts0, ts1):
     p.false_northing = 3187500.
 
     v = nc.createVariable(VNAME, 'f', ('time','yc','xc'), fill_value=1e20)
-    v.units = VARS[VNAME]['units'] 
-    v.standard_name = VARS[VNAME]['standard_name'] 
-    v.long_name = VARS[VNAME]['long_name'] 
-    v.cell_methods = VARS[VNAME]['cell_methods']
+    v.units = common.VARS[VNAME]['units'] 
+    v.standard_name = common.VARS[VNAME]['standard_name'] 
+    v.long_name = common.VARS[VNAME]['long_name'] 
+    v.cell_methods = common.VARS[VNAME]['cell_methods']
     v.missing_value = numpy.array(1e20, v.dtype)
-    v.coordinates = VARS[VNAME]['coordinates']
+    v.coordinates = common.VARS[VNAME]['coordinates']
     v.grid_mapping = 'Lambert_Conformal'
-    if VARS[VNAME].has_key('positive'):
-        v.positive = VARS[VNAME]['positive']
+    if common.VARS[VNAME].has_key('positive'):
+        v.positive = common.VARS[VNAME]['positive']
 
 
     # write tm
     offset = int((ts0 - TIMES[0]).days)
-    if VARS[VNAME]['interval'] == HOURLY3:
+    if common.VARS[VNAME]['interval'] == HOURLY3:
         tm[:] = offset + numpy.arange(0.125, (tsteps/8) + 0.125, 0.125)
         # write tmb
         tmb[:,0] = offset + numpy.arange(0., (tsteps/8), 0.125)
@@ -630,7 +170,7 @@ def create_file(VNAME, ts0, ts1):
         tmb[:,1] = offset + numpy.arange(1.25, tsteps+1., 1.)
    
     nc2 = netCDF4.Dataset('%s/%s_DOMAIN1_0001.nc' % (
-                                DATADIR, VARS[VNAME]['source']), 'r')
+                                DATADIR, common.VARS[VNAME]['source']), 'r')
     # write lat
     lat[:] = nc2.variables[latgrid][15:-15,15:-16]
     lon[:] = nc2.variables[longrid][15:-15,15:-16]
@@ -678,7 +218,7 @@ def compute1d(VNAME, fp, ts0, ts1):
     lookfor = ts0.strftime("minutes since %Y-%m-%d")
     # Figure out when our data begins!
     for i in range(1,1500):
-        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, common.VARS[VNAME]['source'], i,)
         nc2 = netCDF4.Dataset(fp2, 'r')
         # minutes since 1983-11-01 03:00:16
         if nc2.variables['time'].units.find(lookfor) == 0:
@@ -694,7 +234,7 @@ def compute1d(VNAME, fp, ts0, ts1):
         if now.month == 2 and now.day == 29:
             now += oneday
             continue
-        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, common.VARS[VNAME]['source'], i,)
         nc2 = netCDF4.Dataset(fp2, 'r')
         # Figure out timestamp base
         tsbase = mx.DateTime.strptime(nc2.variables['time'].units[14:27], 
@@ -707,19 +247,19 @@ def compute1d(VNAME, fp, ts0, ts1):
         if offset2 > tsteps:
             i += 1
             offset2 = tsteps
-        data = VARS[VNAME]['npfunc'](nc2.variables[VARS[VNAME]['ncsource']][offset1:offset2,15:-15,15:-16], axis=0)
+        data = common.VARS[VNAME]['npfunc'](nc2.variables[common.VARS[VNAME]['ncsource']][offset1:offset2,15:-15,15:-16], axis=0)
         nc2.close()
 
 
         if offset2 == tsteps: # Need to step ahead and get next file
-            fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+            fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, common.VARS[VNAME]['source'], i,)
             nc2 = netCDF4.Dataset(fp2, 'r')
-            data2 = nc2.variables[VARS[VNAME]['ncsource']][:1,15:-15,15:-16]
+            data2 = nc2.variables[common.VARS[VNAME]['ncsource']][:1,15:-15,15:-16]
             nc2.close()
             #print 'data IN', numpy.average(data)
             #print 'data2 IN', numpy.average(data2)
             if numpy.max(data2) != 0 and VNAME not in ['sic',]:
-                data = VARS[VNAME]['npfunc2'](data, data2)
+                data = common.VARS[VNAME]['npfunc2'](data, data2)
             else:
                 print 'Skipping TS2 Computation'
         print '%s %s %02i %02i Avg: %.3f' % (now.strftime("%Y%m%d"), fp2, offset1, offset2, numpy.average(data))
@@ -738,7 +278,7 @@ def compute3h(VNAME, fp, ts0, ts1):
     lookfor = ts0.strftime("minutes since %Y-%m-%d")                            
     # Figure out when our data begins!                                          
     for i in range(1,1500):                                                     
-        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)    
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, common.VARS[VNAME]['source'], i,)    
         nc2 = netCDF4.Dataset(fp2, 'r')                                         
         # minutes since 1983-11-01 03:00:16                                     
         if nc2.variables['time'].units.find(lookfor) == 0:                      
@@ -754,7 +294,7 @@ def compute3h(VNAME, fp, ts0, ts1):
     now = ts0
     v = 0
     while v < total:
-        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)
+        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, common.VARS[VNAME]['source'], i,)
         nc2 = netCDF4.Dataset(fp2, 'r')
         tsbase = mx.DateTime.strptime(nc2.variables['time'].units[14:27], 
 		'%Y-%m-%d %H')
@@ -812,7 +352,7 @@ def compute3h(VNAME, fp, ts0, ts1):
         elif VNAME == 'pr':
             data = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
         else:
-            ncs = VARS[VNAME]['ncsource']
+            ncs = common.VARS[VNAME]['ncsource']
             if PLEVEL is not None:
                 l = list(nc2.variables['pressure'][:]).index(PLEVEL)
                 data = nc2.variables[ncs][:,l,15:-15,15:-16]
@@ -826,8 +366,8 @@ def compute3h(VNAME, fp, ts0, ts1):
             v2 = total
         
         print "i=%4i tsteps=%2i %5i %5i/%5i %.5f" % (i, tsteps, v, v2, total, 
-           numpy.max(data) / VARS[VNAME].get('quo', 1.0))
-        ncv[v:v2] = data[0:ed] / VARS[VNAME].get('quo', 1.0)
+           numpy.max(data) / common.VARS[VNAME].get('quo', 1.0))
+        ncv[v:v2] = data[0:ed] / common.VARS[VNAME].get('quo', 1.0)
         nc2.close()
         v = v2
         i += 1
@@ -837,7 +377,7 @@ for i in range(len(TIMES)-1):
     ts0 = TIMES[i]
     ts1 = TIMES[i+1]
     fp = create_file(VNAME, ts0, ts1 )
-    if VARS[VNAME]['interval'] == HOURLY3:
+    if common.VARS[VNAME]['interval'] == HOURLY3:
         compute3h(VNAME, fp, ts0, ts1)
     else:
         compute1d(VNAME, fp, ts0, ts1)
