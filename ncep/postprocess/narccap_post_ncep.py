@@ -23,7 +23,7 @@ else:
     PLEVEL = None
 META  = {}
 if RUNID == 'C':
-    DATADIR = "Run.NCEP"
+    DATADIR = "../Run.NCEP"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP present-day climate using NCEP/DOE Reanalysis'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'present-day climate using NCEP/DOE Reanalysis'
@@ -98,6 +98,15 @@ VARS = {
           'cell_methods'  : 'time: Instantaneous',
             'long_name'  : 'Snow Depth',
             'standard_name'  : 'surface_snow_thickness'},
+ 'swe'  : {'units'  : 'mm',
+            'source' : 'MMOUTP',
+            'ncsource'  : 'weasd',
+          'table' : 3,
+          'interval' : HOURLY3,
+            'coordinates'  : "lon lat",
+          'cell_methods'  : 'time: Instantaneous',
+            'long_name'  : 'Snow Water Equivalent',
+            'standard_name'  : 'lwe_thickness_of_surface_snow_amount'},
  'rsut'  : {'units'  : 'W m-2',
             'source' : 'NCOUT',
             'ncsource'  : 'osw1',
@@ -478,6 +487,7 @@ VARS = {
    'standard_name' : 'wind_speed_of_gust',
    'cell_methods' : 'time: maximum (interval: 24 hours)',
    'npfunc': numpy.max,
+   'npfunc2': numpy.maximum,
    'coordinates': 'lon lat height',
  },
  'sic' : {
@@ -700,7 +710,7 @@ def compute1d(VNAME, fp, ts0, ts1):
             nc2.close()
             #print 'data IN', numpy.average(data)
             #print 'data2 IN', numpy.average(data2)
-            if numpy.max(data2) != 0:
+            if numpy.max(data2) != 0 and VNAME not in ['sic',]:
                 data = VARS[VNAME]['npfunc2'](data, data2)
             else:
                 print 'Skipping TS2 Computation'
@@ -712,15 +722,15 @@ def compute1d(VNAME, fp, ts0, ts1):
     nc.close()
 
 
-def compute3h(VNAME, fp, ts0, ts1):
+def compute3h(VNAME, fp, ts0, ts1, running):
     """
     This is just a straight dumping of data from the NC or MMOUTP files
     to the resulting netCDF file.
     """
     lookfor = ts0.strftime("minutes since %Y-%m-%d")                            
     # Figure out when our data begins!                                          
-    for i in range(1,1500):                                                     
-        fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, VARS[VNAME]['source'], i,)    
+    for i in range(1,1226):   
+        fp2 = '%s/MMOUTP_DOMAIN1_%04i.nc' % (DATADIR,  i,)    
         nc2 = netCDF4.Dataset(fp2, 'r')                                         
         # minutes since 1983-11-01 03:00:16                                     
         if nc2.variables['time'].units.find(lookfor) == 0:                      
@@ -753,10 +763,10 @@ def compute3h(VNAME, fp, ts0, ts1):
             bogus = nc2.variables['soil_m_1'][:,15:-15,15:-16]
             data = numpy.zeros( bogus.shape )
             plevels = nc2.variables['pressure'][:]
-            for i in range(1,len(plevels)-1):
-                dp = plevels[i] - plevels[i+1]
-                q1 = nc2.variables['q'][:,i,15:-15,15:-16]
-                q2 = nc2.variables['q'][:,i+1,15:-15,15:-16]
+            for j in range(1,len(plevels)-1):
+                dp = plevels[j] - plevels[j+1]
+                q1 = nc2.variables['q'][:,j,15:-15,15:-16]
+                q2 = nc2.variables['q'][:,j+1,15:-15,15:-16]
                 # inches, convert to mm , which is kg m-2
                 data += .0002 * (dp) * ((q1 + q2) * 1000.0) * 25.4
 
@@ -765,34 +775,44 @@ def compute3h(VNAME, fp, ts0, ts1):
             subsurface = nc2.variables['ugdrnoff'][:,15:-15,15:-16]
             data = numpy.zeros( surface.shape )
             tsteps = surface.shape[0]
-            for i in range(tsteps):
+            for j in range(tsteps):
                 if LOOP1 is None:
-                    s0 = surface[i]
-                    ss0 = subsurface[i]
+                    s0 = surface[j]
+                    ss0 = subsurface[j]
                 else:
-                    s0 = surface[i] - LOOP1
-                    ss0 = subsurface[i] - LOOP2
-                LOOP1 = surface[i]
-                LOOP2 = subsurface[i]
+                    s0 = surface[j] - LOOP1
+                    ss0 = subsurface[j] - LOOP2
+                LOOP1 = surface[j]
+                LOOP2 = subsurface[j]
                 data[i] = s0 + ss0
 
         elif VNAME == 'mrros':
             surface = nc2.variables['sfcrnoff'][:,15:-15,15:-16]
             data = numpy.zeros( surface.shape )
             tsteps = surface.shape[0]
-            for i in range(tsteps):
+            for j in range(tsteps):
                 if LOOP1 is None:
-                    s0 = surface[i]
+                    s0 = surface[j]
                 else:
-                    s0 = surface[i] - LOOP1
-                LOOP1 = surface[i]
-                data[i] = s0 
+                    s0 = surface[j] - LOOP1
+                LOOP1 = surface[j]
+                data[j] = s0 
 
         elif VNAME == 'huss':
             q2 = nc2.variables['q2'][:,15:-15,15:-16]
             data = q2 / (1.0 + q2)
-        elif VNAME == 'pr':
-            data = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
+
+        elif VNAME in ['pr','prc']: # Its acumulated
+            if VNAME == 'pr':
+                pr = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
+            else:
+                pr = nc2.variables['rain_con'][:,15:-15,15:-16]
+            data = numpy.zeros( pr.shape )
+            for j in range(tsteps):
+                if running is None:
+                    running = numpy.zeros( pr[0].shape )
+                data[j] = pr[j] - running
+                running = pr[j]
         else:
             ncs = VARS[VNAME]['ncsource']
             if PLEVEL is not None:
@@ -807,19 +827,21 @@ def compute3h(VNAME, fp, ts0, ts1):
             ed -= (v2 - total)
             v2 = total
         
-        print "i=%4i tsteps=%2i %5i %5i/%5i %.5f" % (i, tsteps, v, v2, total, 
-           numpy.max(data) / VARS[VNAME].get('quo', 1.0))
+        print "i=%4i tsteps=%2i %5i %5i/%5i %.5f %s" % (i, tsteps, v, v2, total, 
+           numpy.max(data) / VARS[VNAME].get('quo', 1.0), numpy.shape(data))
         ncv[v:v2] = data[0:ed] / VARS[VNAME].get('quo', 1.0)
         nc2.close()
         v = v2
         i += 1
     nc.close()
+    return running
 
+running = None
 for i in range(len(TIMES)-1):
     ts0 = TIMES[i]
     ts1 = TIMES[i+1]
     fp = create_file(VNAME, ts0, ts1 )
     if VARS[VNAME]['interval'] == HOURLY3:
-        compute3h(VNAME, fp, ts0, ts1)
+        running = compute3h(VNAME, fp, ts0, ts1, running)
     else:
         compute1d(VNAME, fp, ts0, ts1)

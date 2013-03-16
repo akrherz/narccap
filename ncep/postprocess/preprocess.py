@@ -14,14 +14,14 @@ import lib
 def process_MMOUT(datadir):
     os.chdir(datadir)
     # Figure out a list of MMOUT files
-    files = glob.glob("MMOUT_DOMAIN1_1189")
+    files = glob.glob("MMOUT_DOMAIN1_0242")
     files.sort()
     # Move us to interpb
     for file in files:
         # We don't wish to convert this file, it is just along for the ride
         if file == "MMOUT_DOMAIN1_000":
             continue
-        os.chdir("/stanley/narccap/INTERPB")
+        os.chdir("/stanley/narccap/ncep/INTERPB")
         # Figure out time axis
         taxis = lib.extract_times(datadir+file)
 

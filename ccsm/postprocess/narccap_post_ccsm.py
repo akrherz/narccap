@@ -35,10 +35,10 @@ if RUNID == 'S':
     mx.DateTime.DateTime(2056,1,1),
     mx.DateTime.DateTime(2061,1,1),
     mx.DateTime.DateTime(2066,1,1),
-    mx.DateTime.DateTime(2071,1,1)
+    mx.DateTime.DateTime(2070,12,29)
     ]
 if RUNID == 'C':
-    DATADIR = "Run.contemporary"
+    DATADIR = "../Run.contemporary"
     META['title'] = 'ISU MM5 model output prepared for NARCCAP contemporary from the Community Climate System Model (CCSM)'
     META['prefix'] = 'MM5I'
     META['experiment_id'] = 'contemporary from CCSM'
@@ -50,7 +50,7 @@ if RUNID == 'C':
     mx.DateTime.DateTime(1986,1,1),
     mx.DateTime.DateTime(1991,1,1),
     mx.DateTime.DateTime(1996,1,1),
-    mx.DateTime.DateTime(2001,1,1)
+    mx.DateTime.DateTime(1999,12,29)
     ]
 
 HOURLY3, DAILY = (1,2)
@@ -503,6 +503,7 @@ VARS = {
    'standard_name' : 'wind_speed_of_gust',
    'cell_methods' : 'time: maximum within days',
    'npfunc': numpy.max,
+   'npfunc2': numpy.maximum,
    'coordinates': 'lon lat height',
  },
  'sic' : {
@@ -717,7 +718,7 @@ def compute1d(VNAME, fp, ts0, ts1):
             nc2.close()
             #print 'data IN', numpy.average(data)
             #print 'data2 IN', numpy.average(data2)
-            if numpy.max(data2) != 0:
+            if numpy.max(data2) != 0 and VNAME not in ['sic',]:
                 data = VARS[VNAME]['npfunc2'](data, data2)
             else:
                 print 'Skipping TS2 Computation'

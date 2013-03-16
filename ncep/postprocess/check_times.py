@@ -5,20 +5,15 @@ import os
 
 lts = 0
 for i in range(1,1192):
-  fp = "Run.NCEP/MMOUTP_DOMAIN1_%04i.nc" % (i,)
+  fp = "../Run.NCEP/MMOUTP_DOMAIN1_%04i.nc" % (i,)
   nc = netCDF3.Dataset(fp)
   tm = nc.variables['time']
   tstr = tm.units.replace("minutes since ", ' ')
   ts = mx.DateTime.strptime(tstr, '%Y-%m-%d %H:%M:%S')
-  print fp, ts,  numpy.shape( nc.variables['rain_con'][:] )
+  ts2 = ts + mx.DateTime.RelativeDateTime(minutes=tm[-1])
+  if (ts.day >= 19 and ts.month == 2) or len(tm[:]) % 2 != 0:
+    print "%s %s %s %s" % (fp, ts.strftime("%Y%m%d%H"), 
+    ts2.strftime("%Y%m%d%H"),  numpy.shape( nc.variables['rain_con'][:] ) )
   s = numpy.shape( nc.variables['rain_con'][:] )
-  if lts == ts:
-    print 'DUP', fp
-  lts = ts
-  if s[0] != 80:
-    print 'BAD', fp
-    #cmd = "bbcp root@metl26:/mnt/sdd1/narccap/output.FUTURE/MMOUT_DOMAIN1_%03i.gz data.FUTURE/" % (i,)
-    #os.system(cmd)
-    #os.rename("data.FUTURE/MMOUT_DOMAIN1_%03i.gz" % (i,), "data.FUTURE/MMOUT_DOMAIN1_%04i.gz" % (i,))
-    #os.unlink(fp)
+  lts = ts2
   nc.close()
