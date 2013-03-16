@@ -343,7 +343,7 @@ def compute3h(VNAME, fp, ts0, ts1, running):
                     nc2.variables[ncs][:,l,  :-1, 1:  ] +
                     nc2.variables[ncs][:,l, 1:  ,  :-1] ) / 4.0
             
-            data = proj[15:-15,15:-15]
+            data = proj[:,15:-15,15:-15]
 
         elif VNAME in ['pr','prc']: # Its acumulated
             if VNAME == 'pr':
