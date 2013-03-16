@@ -3,7 +3,7 @@ import numpy as np
 import mx.DateTime
 import os
 
-times = [
+times2 = [
  mx.DateTime.DateTime(1968,1,1),
  mx.DateTime.DateTime(1971,1,1),
  mx.DateTime.DateTime(1976,1,1),
@@ -13,7 +13,7 @@ times = [
  mx.DateTime.DateTime(1996,1,1),
  mx.DateTime.DateTime(2001,1,1)
 ]
-times2 = [
+times = [
  mx.DateTime.DateTime(2038,1,1),
  mx.DateTime.DateTime(2041,1,1),
  mx.DateTime.DateTime(2046,1,1),
@@ -25,7 +25,7 @@ times2 = [
 ]
 
 def findIJ(lon,lat):
-  nc = netCDF4.Dataset('../final/swe_MM5I_hadcm3_1968010103.nc', 'r')
+  nc = netCDF4.Dataset('../final/swe_MM5I_hadcm3_2038010103.nc', 'r')
   lats = nc.variables['lat'][:]
   lons = nc.variables['lon'][:]
   (y,x) = np.shape(lats)
