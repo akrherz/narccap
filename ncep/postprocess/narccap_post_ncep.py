@@ -75,21 +75,11 @@ def create_file(VNAME, ts0, ts1):
     print ' + Created NetCDF File %s has %s time steps' % (fp, tsteps)
     nc.createDimension('time', 0)
     nc.createDimension('bnds', 2)
-    if VNAME in ['ua','va']:
-        nc.createDimension('xc', 124)
-        nc.createDimension('yc', 100)
-        latgrid = 'latitdot'
-        longrid = 'longidot'
-        xgend = 139
-        ygend = 115
-    else:
-        nc.createDimension('xc', 123)
-        nc.createDimension('yc', 99)
-        latgrid = 'latitcrs'
-        longrid = 'longicrs'
-        xgend = 138
-        ygend = 114
-
+    nc.createDimension('xc', 124)
+    nc.createDimension('yc', 99)
+    latgrid = 'latitcrs'
+    longrid = 'longicrs'
+    
     # Create Time Dimension
     tm = nc.createVariable('time', 'd', ('time',))
     tm.long_name = 'time'
@@ -161,11 +151,11 @@ def create_file(VNAME, ts0, ts1):
                                 DATADIR), 'r')
     # write lat
     # write lat
-    lat[:] = nc3.variables[latgrid][15:-15,15:-16]
-    lon[:] = nc3.variables[longrid][15:-15,15:-16]
+    lat[:] = nc3.variables[latgrid][15:-15,15:-15]
+    lon[:] = nc3.variables[longrid][15:-15,15:-15]
     nc3.close()
-    xc[:] = numpy.arange(15,xgend) * nc2.variables['grid_ds'][:] * 1000.0
-    yc[:] = numpy.arange(15,ygend) * nc2.variables['grid_ds'][:] * 1000.0
+    xc[:] = numpy.arange(15,139) * nc2.variables['grid_ds'][:] * 1000.0
+    yc[:] = numpy.arange(15,114) * nc2.variables['grid_ds'][:] * 1000.0
     p.standard_parallel = [nc2.variables['stdlat_2'][:], nc2.variables['stdlat_1'][:]]
     p.longitude_of_central_meridian = nc2.variables['coarse_cenlon'][:]
     p.latitude_of_projection_origin = nc2.variables['coarse_cenlat'][:]
@@ -378,12 +368,13 @@ def compute3h(VNAME, fp, ts0, ts1, running):
     nc.close()
     return running
 
-running = None
-for i in range(len(TIMES)-1):
-    ts0 = TIMES[i]
-    ts1 = TIMES[i+1]
-    fp = create_file(VNAME, ts0, ts1 )
-    if common.VARS[VNAME]['interval'] == HOURLY3:
-        running = compute3h(VNAME, fp, ts0, ts1, running)
-    else:
-        compute1d(VNAME, fp, ts0, ts1)
+if __name__ == "__main__":
+    running = None
+    for i in range(len(TIMES)-1):
+        ts0 = TIMES[i]
+        ts1 = TIMES[i+1]
+        fp = create_file(VNAME, ts0, ts1 )
+        if common.VARS[VNAME]['interval'] == HOURLY3:
+            running = compute3h(VNAME, fp, ts0, ts1, running)
+        else:
+            compute1d(VNAME, fp, ts0, ts1)
