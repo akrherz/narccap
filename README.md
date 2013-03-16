@@ -32,3 +32,11 @@ orog    Surface Altitude -- MMOUTP has terrain(i_cross, j_cross)
 rootd	Root Depth	m	 
 sftlf	Land Area Fraction	1 -- REGRID has LANDMASK
  
+ Regridding of u and v onto cross grid
+ http://www.mmm.ucar.edu/mm5/On-Line-Tutorial/terrain/Examples/terrain_ex9.html
+ .   .     .
+   x    x        so the u,v value at x(0,0) is the average of 0,0 0,1 1,0 1,1
+ .   .     .   
+   x    x 
+ .   .     .
+ 

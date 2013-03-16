@@ -334,6 +334,17 @@ def compute3h(VNAME, fp, ts0, ts1, running):
             q2 = nc2.variables['q2'][:,15:-15,15:-16]
             data = q2 / (1.0 + q2)
 
+        elif VNAME in ['ua','va']:
+            ncs = common.VARS[VNAME]['ncsource']
+            l = list(nc2.variables['pressure'][:]).index(PLEVEL)
+            # dot grid surrounds cross making this striding easy
+            proj = (nc2.variables[ncs][:,l,  :-2,  :-2] +
+                    nc2.variables[ncs][:,l, 1:  , 1:  ] +
+                    nc2.variables[ncs][:,l,  :-2, 1:  ] +
+                    nc2.variables[ncs][:,l, 1:  ,  :-2] ) / 4.0
+            
+            data = proj[15:-15,15:-15]
+
         elif VNAME in ['pr','prc']: # Its acumulated
             if VNAME == 'pr':
                 pr = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
@@ -349,9 +360,9 @@ def compute3h(VNAME, fp, ts0, ts1, running):
             ncs = common.VARS[VNAME]['ncsource']
             if PLEVEL is not None:
                 l = list(nc2.variables['pressure'][:]).index(PLEVEL)
-                data = nc2.variables[ncs][:,l,15:-15,15:-16]
+                data = nc2.variables[ncs][:,l,15:-15,15:-15]
             else:
-                data = nc2.variables[ncs][:,15:-15,15:-16]
+                data = nc2.variables[ncs][:,15:-15,15:-15]
         # Okay, we have the data var loaded up
         v2 = v + tsteps
         ed = tsteps
