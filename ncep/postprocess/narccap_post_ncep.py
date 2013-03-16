@@ -802,8 +802,11 @@ def compute3h(VNAME, fp, ts0, ts1, running):
             q2 = nc2.variables['q2'][:,15:-15,15:-16]
             data = q2 / (1.0 + q2)
 
-        elif VNAME == 'pr': # Its acumulated
-            pr = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
+        elif VNAME in ['pr','prc']: # Its acumulated
+            if VNAME == 'pr':
+                pr = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
+            else:
+                pr = nc2.variables['rain_con'][:,15:-15,15:-16]
             data = numpy.zeros( pr.shape )
             for j in range(tsteps):
                 if running is None:
