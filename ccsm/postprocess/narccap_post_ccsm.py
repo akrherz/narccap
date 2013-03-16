@@ -77,8 +77,7 @@ def create_file(VNAME, ts0, ts1):
     nc.contact2 = '3015 Agronomy Hall, Iowa State Univ.,Ames, Iowa, USA'
     nc.realization = '1'
     nc.experiment_id = META['experiment_id']
-    # Should be table 1 for daily ?
-    nc.table_id = 'Table %s' % (common.VARS[VNAME].get('table', 1),)
+    nc.table_id = 'Table %s' % (common.VARS[VNAME]['table'],)
     nc.project_id = 'NARCCAP'
     nc.source = 'MM5(2002): atmosphere: MM5v3.6.3 non-hydrostatic; sst/sea ice: AMIPII; land: Noah;  Convection: Kain-Fritsch 2; Radiation: RRTM; PBL: MRF; Explicit Moisture: Reisner Mixed-Phase; Buffer: 15 point exponential; Horizontal Resolution: 50km; Vertical Levels: 24'
     nc.institution = 'ISU (Iowa State University, Ames, Iowa, USA)'
@@ -101,9 +100,10 @@ def create_file(VNAME, ts0, ts1):
     tm.axis = 'T'
     tm.calendar = '365_day'
     tm.units = 'days since %s 00:00:0.0' % (TIMES[0].strftime("%Y-%m-%d"),)
-    tm.bounds = 'time_bnds'
+    if common.VARS[VNAME].has_key('cell_methods'):
+        tm.bounds = 'time_bnds'
 
-    tmb = nc.createVariable('time_bnds', 'd', ('time', 'bnds'))
+        tmb = nc.createVariable('time_bnds', 'd', ('time', 'bnds'))
 
     xc = nc.createVariable('xc', 'd', ('xc',))
     xc.long_name = 'x-coordinate Cartesian system'
@@ -137,8 +137,9 @@ def create_file(VNAME, ts0, ts1):
     v = nc.createVariable(VNAME, 'f', ('time','yc','xc'), fill_value=1e20)
     v.units = common.VARS[VNAME]['units'] 
     v.standard_name = common.VARS[VNAME]['standard_name'] 
-    v.long_name = common.VARS[VNAME]['long_name'] 
-    v.cell_methods = common.VARS[VNAME]['cell_methods']
+    v.long_name = common.VARS[VNAME]['long_name']
+    if common.VARS[VNAME].has_key('cell_methods'):
+        v.cell_methods = common.VARS[VNAME]['cell_methods']
     v.missing_value = numpy.array(1e20, v.dtype)
     v.coordinates = common.VARS[VNAME]['coordinates']
     v.grid_mapping = 'Lambert_Conformal'
@@ -151,19 +152,21 @@ def create_file(VNAME, ts0, ts1):
     if common.VARS[VNAME]['interval'] == HOURLY3:
         tm[:] = offset + numpy.arange(0.125, (tsteps/8) + 0.125, 0.125)
         # write tmb
-        tmb[:,0] = offset + numpy.arange(0., (tsteps/8), 0.125)
-        tmb[:,1] = offset + numpy.arange(0.125, (tsteps/8)+0.125, 0.125)
+        if common.VARS[VNAME].has_key('cell_methods'):
+            tmb[:,0] = offset + numpy.arange(0., (tsteps/8), 0.125)
+            tmb[:,1] = offset + numpy.arange(0.125, (tsteps/8)+0.125, 0.125)
     else:
         tm[:] = offset + numpy.arange(0.25, tsteps , 1.)
         # write tmb
-        tmb[:,0] = offset + numpy.arange(0.25, tsteps, 1.)
-        tmb[:,1] = offset + numpy.arange(1.25, tsteps+1., 1.)
+        if common.VARS[VNAME].has_key('cell_methods'):
+            tmb[:,0] = offset + numpy.arange(0.25, tsteps, 1.)
+            tmb[:,1] = offset + numpy.arange(1.25, tsteps+1., 1.)
    
     nc2 = netCDF4.Dataset('%s/%s_DOMAIN1_0001.nc' % (
                                 DATADIR, common.VARS[VNAME]['source']), 'r')
     # write lat
     lat[:] = nc2.variables[latgrid][15:-15,15:-15]
-    lon[:] = nc2.variables[longrid][15:-15,15:-15]
+    lon[:] = nc2.variables[longrid][15:-15,15:-15] + 360.0
     xc[:] = numpy.arange(15,139) * nc2.variables['grid_ds'][:] * 1000.0
     yc[:] = numpy.arange(15,114) * nc2.variables['grid_ds'][:] * 1000.0
     p.standard_parallel = [nc2.variables['stdlat_2'][:], nc2.variables['stdlat_1'][:]]
@@ -172,26 +175,7 @@ def create_file(VNAME, ts0, ts1):
     nc2.close()
 
     # Generate singletons
-    if VNAME in ['huss','tas','tasmax', 'tasmin','uas','vas']:
-        height = nc.createVariable('height', 'd')
-        height.long_name = "height"
-        height.standard_name = "height"
-        height.units = "m"
-        height.positive = "up"
-        height.axis = "Z"
-        if VNAME in ['huss','tas','tasmax','tasmin']:
-            height[:] = 2.
-        elif VNAME in ['uas','vas']:
-            height[:] = 10.
-
-    if PLEVEL is not None:
-        plev = nc.createVariable('plev', 'd')
-        plev.long_name = "pressure"
-        plev.standard_name = "air_pressure"
-        plev.units = "Pa"
-        plev.positive = "down"
-        plev.axis = "Z"
-        plev[:] = PLEVEL
+    common.do_singleton(nc, VNAME, PLEVEL)
         
 
     nc.close()
@@ -237,14 +221,14 @@ def compute1d(VNAME, fp, ts0, ts1):
         if offset2 > tsteps:
             i += 1
             offset2 = tsteps
-        data = common.VARS[VNAME]['npfunc'](nc2.variables[common.VARS[VNAME]['ncsource']][offset1:offset2,15:-15,15:-16], axis=0)
+        data = common.VARS[VNAME]['npfunc'](nc2.variables[common.VARS[VNAME]['ncsource']][offset1:offset2,15:-15,15:-15], axis=0)
         nc2.close()
 
 
         if offset2 == tsteps: # Need to step ahead and get next file
             fp2 = '%s/%s_DOMAIN1_%04i.nc' % (DATADIR, common.VARS[VNAME]['source'], i,)
             nc2 = netCDF4.Dataset(fp2, 'r')
-            data2 = nc2.variables[common.VARS[VNAME]['ncsource']][:1,15:-15,15:-16]
+            data2 = nc2.variables[common.VARS[VNAME]['ncsource']][:1,15:-15,15:-15]
             nc2.close()
             #print 'data IN', numpy.average(data)
             #print 'data2 IN', numpy.average(data2)
@@ -291,26 +275,26 @@ def compute3h(VNAME, fp, ts0, ts1):
         tsteps = len(nc2.variables['time'][:])
 
         if VNAME == 'mrfso':
-            data = ((nc2.variables['soil_m_1'][:,15:-15,15:-16] - nc2.variables['soil_w_1'][:,15:-15,15:-16]) * 0.10  + (nc2.variables['soil_m_2'][:,15:-15,15:-16] - nc2.variables['soil_w_2'][:,15:-15,15:-16]) * 0.30  + (nc2.variables['soil_m_3'][:,15:-15,15:-16] - nc2.variables['soil_w_3'][:,15:-15,15:-16]) * 0.60  + (nc2.variables['soil_m_4'][:,15:-15,15:-16] - nc2.variables['soil_w_4'][:,15:-15,15:-16]) * 1.00  ) * 1000.0
+            data = ((nc2.variables['soil_m_1'][:,15:-15,15:-15] - nc2.variables['soil_w_1'][:,15:-15,15:-15]) * 0.10  + (nc2.variables['soil_m_2'][:,15:-15,15:-15] - nc2.variables['soil_w_2'][:,15:-15,15:-15]) * 0.30  + (nc2.variables['soil_m_3'][:,15:-15,15:-15] - nc2.variables['soil_w_3'][:,15:-15,15:-15]) * 0.60  + (nc2.variables['soil_m_4'][:,15:-15,15:-15] - nc2.variables['soil_w_4'][:,15:-15,15:-15]) * 1.00  ) * 1000.0
 
         elif VNAME == 'mrso':
-            data = ((nc2.variables['soil_m_1'][:,15:-15,15:-16]) * 0.10  + (nc2.variables['soil_m_2'][:,15:-15,15:-16] ) * 0.30  + (nc2.variables['soil_m_3'][:,15:-15,15:-16] ) * 0.60  + (nc2.variables['soil_m_4'][:,15:-15,15:-16] ) * 1.00  ) * 1000.0
+            data = ((nc2.variables['soil_m_1'][:,15:-15,15:-15]) * 0.10  + (nc2.variables['soil_m_2'][:,15:-15,15:-15] ) * 0.30  + (nc2.variables['soil_m_3'][:,15:-15,15:-15] ) * 0.60  + (nc2.variables['soil_m_4'][:,15:-15,15:-15] ) * 1.00  ) * 1000.0
 
         elif VNAME == 'prw': # Precipitable Water
             # http://docs.lib.noaa.gov/rescue/mwr/067/mwr-067-04-0100.pdf
-            bogus = nc2.variables['soil_m_1'][:,15:-15,15:-16]
+            bogus = nc2.variables['soil_m_1'][:,15:-15,15:-15]
             data = numpy.zeros( bogus.shape )
             plevels = nc2.variables['pressure'][:]
             for i in range(1,len(plevels)-1):
                 dp = plevels[i] - plevels[i+1]
-                q1 = nc2.variables['q'][:,i,15:-15,15:-16]
-                q2 = nc2.variables['q'][:,i+1,15:-15,15:-16]
+                q1 = nc2.variables['q'][:,i,15:-15,15:-15]
+                q2 = nc2.variables['q'][:,i+1,15:-15,15:-15]
                 # inches, convert to mm , which is kg m-2
                 data += .0002 * (dp) * ((q1 + q2) * 1000.0) * 25.4
 
         elif VNAME == 'mrro':
-            surface = nc2.variables['sfcrnoff'][:,15:-15,15:-16]
-            subsurface = nc2.variables['ugdrnoff'][:,15:-15,15:-16]
+            surface = nc2.variables['sfcrnoff'][:,15:-15,15:-15]
+            subsurface = nc2.variables['ugdrnoff'][:,15:-15,15:-15]
             data = numpy.zeros( surface.shape )
             tsteps = surface.shape[0]
             for i in range(tsteps):
@@ -325,7 +309,7 @@ def compute3h(VNAME, fp, ts0, ts1):
                 data[i] = s0 + ss0
 
         elif VNAME == 'mrros':
-            surface = nc2.variables['sfcrnoff'][:,15:-15,15:-16]
+            surface = nc2.variables['sfcrnoff'][:,15:-15,15:-15]
             data = numpy.zeros( surface.shape )
             tsteps = surface.shape[0]
             for i in range(tsteps):
@@ -337,17 +321,36 @@ def compute3h(VNAME, fp, ts0, ts1):
                 data[i] = s0 
 
         elif VNAME == 'huss':
-            q2 = nc2.variables['q2'][:,15:-15,15:-16]
+            q2 = nc2.variables['q2'][:,15:-15,15:-15]
             data = q2 / (1.0 + q2)
+            
+        elif VNAME in ['ua','va']:
+            ncs = common.VARS[VNAME]['ncsource']
+            l = list(nc2.variables['pressure'][:]).index(PLEVEL)
+            # dot grid surrounds cross making this striding easy
+            proj = (nc2.variables[ncs][:,l,  :-1,  :-1] +
+                    nc2.variables[ncs][:,l, 1:  , 1:  ] +
+                    nc2.variables[ncs][:,l,  :-1, 1:  ] +
+                    nc2.variables[ncs][:,l, 1:  ,  :-1] ) / 4.0
+            
+            data = proj[:,15:-15,15:-15]
+        
         elif VNAME == 'pr':
-            data = nc2.variables['rain_con'][:,15:-15,15:-16] + nc2.variables['rain_non'][:,15:-15,15:-16]
+            data = nc2.variables['rain_con'][:,15:-15,15:-15] + nc2.variables['rain_non'][:,15:-15,15:-15]
+            # Floor data at zero, prevent small negative numbers
+            data = numpy.where(data > 0, data, 0 )
+        elif VNAME == 'prc':
+            data = nc2.variables['rain_con'][:,15:-15,15:-15] 
+            # Floor data at zero, prevent small negative numbers
+            data = numpy.where(data > 0, data, 0 )
+        
         else:
             ncs = common.VARS[VNAME]['ncsource']
             if PLEVEL is not None:
                 l = list(nc2.variables['pressure'][:]).index(PLEVEL)
-                data = nc2.variables[ncs][:,l,15:-15,15:-16]
+                data = nc2.variables[ncs][:,l,15:-15,15:-15]
             else:
-                data = nc2.variables[ncs][:,15:-15,15:-16]
+                data = nc2.variables[ncs][:,15:-15,15:-15]
         # Okay, we have the data var loaded up
         v2 = v + tsteps
         ed = tsteps
