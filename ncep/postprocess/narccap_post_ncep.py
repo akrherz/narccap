@@ -202,8 +202,8 @@ def compute1d(VNAME, fp, ts0, ts1):
         nc2 = netCDF4.Dataset(fp2, 'r')
         # minutes since 1983-11-01 03:00:16
         if nc2.variables['time'].units.find(lookfor) == 0:
-           nc2.close()
-           break
+            nc2.close()
+            break
         nc2.close()
 
     print 'For timestamp %s We found file %s' % (ts0, fp2)
@@ -266,8 +266,8 @@ def compute3h(VNAME, fp, ts0, ts1, running):
         nc2 = netCDF4.Dataset(fp2, 'r')                                         
         # minutes since 1983-11-01 03:00:16                                     
         if nc2.variables['time'].units.find(lookfor) == 0:                      
-           nc2.close()                                                          
-           break                                                                
+            nc2.close()                                                          
+            break                                                                
         nc2.close()                                                             
                                                                                 
     print 'For timestamp %s We found file %s' % (ts0, fp2)       
@@ -338,10 +338,10 @@ def compute3h(VNAME, fp, ts0, ts1, running):
             ncs = common.VARS[VNAME]['ncsource']
             l = list(nc2.variables['pressure'][:]).index(PLEVEL)
             # dot grid surrounds cross making this striding easy
-            proj = (nc2.variables[ncs][:,l,  :-2,  :-2] +
+            proj = (nc2.variables[ncs][:,l,  :-1,  :-1] +
                     nc2.variables[ncs][:,l, 1:  , 1:  ] +
-                    nc2.variables[ncs][:,l,  :-2, 1:  ] +
-                    nc2.variables[ncs][:,l, 1:  ,  :-2] ) / 4.0
+                    nc2.variables[ncs][:,l,  :-1, 1:  ] +
+                    nc2.variables[ncs][:,l, 1:  ,  :-1] ) / 4.0
             
             data = proj[15:-15,15:-15]
 
