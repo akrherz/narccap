@@ -441,6 +441,7 @@ VARS = {
    'standard_name' : 'wind_speed_of_gust',
    'cell_methods' : 'time: maximum (interval: 24 hours)',
    'npfunc': numpy.max,
+   'npfunc2': numpy.maximum,
    'coordinates': 'lon lat level',
  },
  'sic' : {
