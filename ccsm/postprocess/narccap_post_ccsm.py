@@ -86,7 +86,8 @@ def create_file(VNAME, ts0, ts1):
         tsteps *= 8
     print ' + Created NetCDF File %s has %s time steps' % (fp, tsteps)
     nc.createDimension('time', 0)
-    nc.createDimension('bnds', 2)
+    if common.VARS[VNAME].has_key('cell_methods'):
+        nc.createDimension('bnds', 2)
     nc.createDimension('xc', 124)
     nc.createDimension('yc', 99)
     latgrid = 'latitcrs'
