@@ -105,13 +105,11 @@ def create_file(VNAME, ts0, ts1):
     lat = nc.createVariable('lat', 'd', ('yc', 'xc'))
     lat.long_name = 'latitude'
     lat.standard_name = 'latitude'
-    lat.axis = 'Y'
     lat.units = 'degrees_north'
     
     lon = nc.createVariable('lon', 'd', ('yc', 'xc'))
     lon.long_name = 'longitude'
     lon.standard_name = 'longitude'
-    lon.axis = 'X'
     lon.units = 'degrees_east'
 
     p = nc.createVariable('Lambert_Conformal', 'c', ())
