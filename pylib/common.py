@@ -288,7 +288,8 @@ VARS = {
    'long_name' : 'Meridional Wind Component',                                   
    'units' : 'm s-1', 
    'table': 5,                                 
-   'standard_name' : 'northward_wind',                                          
+   'standard_name' : 'northward_wind',   
+   'coordinates': 'lon lat level',                                       
  },  
  'zg500' : {
    '3d': True,
