@@ -340,6 +340,9 @@ def compute3h(VNAME, fp, ts0, ts1, running):
                 running = pr[j]
             # Floor data at zero, prevent small negative numbers
             data = numpy.where(data > 0, data, 0 )
+        elif VNAME == 'zg500':
+            l = list(nc2.variables['pressure'][:]).index(500)
+            data = nc2.variables['h'][:,l,15:-15,15:-15]
         else:
             ncs = common.VARS[VNAME]['ncsource']
             if PLEVEL is not None:
