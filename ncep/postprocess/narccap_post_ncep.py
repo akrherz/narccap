@@ -241,6 +241,7 @@ def compute3h(VNAME, fp, ts0, ts1, running):
     This is just a straight dumping of data from the NC or MMOUTP files
     to the resulting netCDF file.
     """
+    global LOOP1, LOOP2
     lookfor = ts0.strftime("minutes since %Y-%m-%d")                            
     # Figure out when our data begins!                                          
     for i in range(1,1226):   
