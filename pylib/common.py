@@ -5,6 +5,15 @@ import numpy
 HOURLY3, DAILY = (1,2)
 
 VARS = {
+ 'swe'  : {'units'  : 'mm',
+           'source' : 'MMOUTP',
+          'ncsource'  : 'weasd',
+          'table' : 3,
+          'interval' : HOURLY3,
+          'coordinates'  : "lon lat",
+          'cell_methods'  : 'time: Instantaneous',
+          'long_name'  : 'Snow Water Equivalent',
+          'standard_name'  : 'lwe_thickness_of_surface_snow_amount'},
  'prw'  : {'units'  : 'kg m-2',
             'source' : 'MMOUTP',
           'table' : 3,
