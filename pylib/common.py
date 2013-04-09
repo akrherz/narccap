@@ -300,6 +300,17 @@ VARS = {
    'standard_name' : 'northward_wind',   
    'coordinates': 'lon lat level',                                       
  },  
+ 'zg' : {
+   '3d': True,
+    'ncsource' : 'h',
+   'table': 5,
+   'interval' : HOURLY3,
+   'source' : 'MMOUTP',
+   'long_name' : 'Geopotential Height',
+   'units' : 'm',
+   'standard_name' : 'geopotential_height',
+   'coordinates': 'lon lat level',
+ },
  'zg500' : {
    '3d': True,
     'ncsource' : 'h',
