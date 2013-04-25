@@ -299,7 +299,7 @@ def compute3h(VNAME, fp, ts0, ts1, running):
                     ss0 = subsurface[j] - LOOP2
                 LOOP1 = surface[j]
                 LOOP2 = subsurface[j]
-                data[i] = s0 + ss0
+                data[j] = s0 + ss0
 
         elif VNAME == 'mrros':
             surface = nc2.variables['sfcrnoff'][:,15:-15,15:-15]
