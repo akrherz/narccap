@@ -85,7 +85,7 @@ for i in range(shp[0]):
         sm[i,j] = 1800.0 * lookup[ data[i,j] ]
         
 
-v[:] = sm[16:-15,16:-15]
+v[:] = sm[15:-16,15:-16]
 
 nc2.close()
 nc.close()

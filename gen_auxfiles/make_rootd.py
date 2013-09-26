@@ -86,7 +86,7 @@ for i in range(shp[0]):
         # 1.8 meter soil depth x SMC
         sm[i,j] = lookup2[ lookup[ data[i,j] ] ]
 
-v[:] = sm[16:-15,16:-15]
+v[:] = sm[15:-16,15:-16]
 
 nc2.close()
 nc.close()

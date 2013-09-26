@@ -72,7 +72,7 @@ mm5 = mm5_class.mm5('MMINPUT_DOMAIN1.196801')
 data = mm5.get_field('terrain', 0)['values']
 data = numpy.array(data[0])
 
-v[:] = data[16:-15,16:-15]
+v[:] = data[15:-16,15:-16]
 
 nc2.close()
 nc.close()
