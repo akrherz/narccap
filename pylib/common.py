@@ -68,7 +68,7 @@ VARS = {
             'standard_name'  : 'surface_snow_thickness'},
  'rsut'  : {'units'  : 'W m-2',
             'source' : 'NCOUT',
-            'ncsource'  : 'osw1',
+            'ncsource'  : 'toasw',
              'positive': 'up',
           'table' : 3,
           'interval' : HOURLY3,
