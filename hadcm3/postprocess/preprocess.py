@@ -6,7 +6,6 @@ import sys
 import os
 import glob
 import mm5_class
-import netCDF3
 import mx.DateTime
 import numpy
 import lib
