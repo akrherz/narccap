@@ -11,6 +11,7 @@ import mx.DateTime
 import numpy
 import lib
 
+
 def process_MMOUT(datadir):
     os.chdir(datadir)
     # Figure out a list of MMOUT files
@@ -23,33 +24,36 @@ def process_MMOUT(datadir):
             continue
         os.chdir("/stanley/narccap/ncep/INTERPB")
         # Figure out time axis
-        taxis = lib.extract_times(datadir+file)
+        taxis = lib.extract_times(datadir + file)
 
         # Setup variable substitution values
         vars = {}
-        vars['mm5file'] = datadir+file
-        vars['syear'] = taxis[0].year
-        vars['smonth'] = taxis[0].month
-        vars['sday'] = taxis[0].day
-        vars['shour'] = taxis[0].hour
+        vars["mm5file"] = datadir + file
+        vars["syear"] = taxis[0].year
+        vars["smonth"] = taxis[0].month
+        vars["sday"] = taxis[0].day
+        vars["shour"] = taxis[0].hour
         if taxis[0].day == 21:
-            taxis[-1] = taxis[0] + mx.DateTime.RelativeDateTime(months=1,day=1)
-        vars['eyear'] = taxis[-1].year
-        vars['emonth'] = taxis[-1].month
-        vars['eday'] = taxis[-1].day
-        vars['ehour'] = taxis[-1].hour
-        
+            taxis[-1] = taxis[0] + mx.DateTime.RelativeDateTime(
+                months=1, day=1
+            )
+        vars["eyear"] = taxis[-1].year
+        vars["emonth"] = taxis[-1].month
+        vars["eday"] = taxis[-1].day
+        vars["ehour"] = taxis[-1].hour
 
         # Edit the namelist.input for interb
-        data = open('namelist.tpl', 'r').read()
-        out = open('namelist.input', 'w')
-        out.write( data % vars )
+        data = open("namelist.tpl", "r").read()
+        out = open("namelist.input", "w")
+        out.write(data % vars)
         out.close()
-        
+
         # Run interb for each file
-        print "Running INTERPB for %s [%s - %s]" % (file,
-              taxis[0].strftime("%Y-%m-%d %H"), 
-              taxis[-1].strftime("%Y-%m-%d %H"))
+        print "Running INTERPB for %s [%s - %s]" % (
+            file,
+            taxis[0].strftime("%Y-%m-%d %H"),
+            taxis[-1].strftime("%Y-%m-%d %H"),
+        )
         os.system("./interpb >& interpb.log")
 
         # Move output file to right location
@@ -58,27 +62,28 @@ def process_MMOUT(datadir):
         os.system("rm -rf FILE_*")
 
         # Gzip
-        os.chdir( datadir )
-        #os.system("gzip %s" % (file,))
+        os.chdir(datadir)
+        # os.system("gzip %s" % (file,))
 
         # Convert to NetCDF
         file = file.replace("UT", "UTP")
         mm5 = mm5_class.mm5(file)
         cmd = "archiver %s 0 %s" % (file, mm5.tsteps)
         print "Converting %s to NetCDF %s tsteps" % (file, mm5.tsteps)
-        si,so = os.popen4( cmd )
-        a = so.read() # Necessary to keep things blocking?
+        si, so = os.popen4(cmd)
+        a = so.read()  # Necessary to keep things blocking?
 
         # Remove MMOUTP files
         if file[:6] == "MMOUTP":
             os.remove(file)
 
+
 def process_NCOUT(datadir):
 
     # Change directory
-    os.chdir( datadir )
+    os.chdir(datadir)
     # Look for any MMOUT and NCOUT files
-    files = glob.glob('NCOUT_DOMAIN1_[0-9][0-9][0-9][0-9]')
+    files = glob.glob("NCOUT_DOMAIN1_[0-9][0-9][0-9][0-9]")
     files.sort()
     # Loop over the files
     for file in files:
@@ -88,13 +93,14 @@ def process_NCOUT(datadir):
         mm5 = mm5_class.mm5(file)
         cmd = "archiver %s 0 %s" % (file, mm5.tsteps)
         print "Converting %s to NetCDF %s tsteps" % (file, mm5.tsteps)
-        si,so = os.popen4( cmd )
-        a = so.read() # Necessary to keep things blocking?
-        
-        # Gzip
-        #os.system("gzip %s" % (file,))
+        si, so = os.popen4(cmd)
+        a = so.read()  # Necessary to keep things blocking?
 
-if __name__ == '__main__':
+        # Gzip
+        # os.system("gzip %s" % (file,))
+
+
+if __name__ == "__main__":
     datadir = sys.argv[1]
-    #process_NCOUT(datadir)
+    # process_NCOUT(datadir)
     process_MMOUT(datadir)
