@@ -1,6 +1,7 @@
 """
 Generate the table 4 variable rootd
 """
+
 import netCDF4
 import datetime
 import numpy
