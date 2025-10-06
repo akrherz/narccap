@@ -2,6 +2,7 @@
 
 This is likely not strictly accurate, but close enough for horseshoes
 """
+
 from __future__ import print_function
 import sys
 import glob

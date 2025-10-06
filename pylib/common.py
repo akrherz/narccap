@@ -1,6 +1,7 @@
 """
- Common stuff for the NARCCAP POST scripts
+Common stuff for the NARCCAP POST scripts
 """
+
 import numpy
 
 HOURLY3, DAILY = (1, 2)

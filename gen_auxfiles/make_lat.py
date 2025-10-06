@@ -1,6 +1,7 @@
 """
 Generate the table 4 variable lat
 """
+
 import netCDF4
 import datetime
 import numpy

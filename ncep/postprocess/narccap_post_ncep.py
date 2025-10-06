@@ -2,6 +2,7 @@
 Uber script to generate NARCCAP archive specification files
 This consumes the result of running the preprocess.py script
 """
+
 from __future__ import print_statement
 import netCDF4
 import mx.DateTime
@@ -27,9 +28,9 @@ else:
 META = {}
 if RUNID == "C":
     DATADIR = "../Run.NCEP"
-    META[
-        "title"
-    ] = "ISU MM5 model output prepared for NARCCAP present-day climate using NCEP/DOE Reanalysis"
+    META["title"] = (
+        "ISU MM5 model output prepared for NARCCAP present-day climate using NCEP/DOE Reanalysis"
+    )
     META["prefix"] = "MM5I"
     META["experiment_id"] = "present-day climate using NCEP/DOE Reanalysis"
     TIMES = [
